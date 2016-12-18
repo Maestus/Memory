@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity
 
         getFragmentManager().beginTransaction().add(R.id.content_main, new DownloadActivity()).commit();
 
+
     }
 
 
