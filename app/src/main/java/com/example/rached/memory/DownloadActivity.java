@@ -55,8 +55,10 @@ public class DownloadActivity extends Fragment {
         }
 
         startRequest();
-        while (!ended)
-            queryStatus();
+        queryStatus();
+
+        getActivity().registerReceiver(onComplete,
+                new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
         return(result);
     }
@@ -108,39 +110,38 @@ public class DownloadActivity extends Fragment {
     };
 
     private void queryStatus() {
-        Cursor c = mgr.query(new DownloadManager.Query().setFilterById(lastDownload));
+            Cursor c = mgr.query(new DownloadManager.Query().setFilterById(lastDownload));
 
-        if (c == null) {
-            Toast.makeText(getActivity(), R.string.download_not_found,
-                    Toast.LENGTH_LONG).show();
-        }
-        else {
-            c.moveToFirst();
+            if (c == null) {
+                Toast.makeText(getActivity(), R.string.download_not_found,
+                        Toast.LENGTH_LONG).show();
+            } else {
+                c.moveToFirst();
 
-            Log.d(getClass().getName(),
-                    "COLUMN_ID: "
-                            + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_ID)));
-            Log.d(getClass().getName(),
-                    "COLUMN_BYTES_DOWNLOADED_SO_FAR: "
-                            + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)));
-            Log.d(getClass().getName(),
-                    "COLUMN_LAST_MODIFIED_TIMESTAMP: "
-                            + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP)));
-            Log.d(getClass().getName(),
-                    "COLUMN_LOCAL_URI: "
-                            + c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)));
-            Log.d(getClass().getName(),
-                    "COLUMN_STATUS: "
-                            + c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS)));
-            Log.d(getClass().getName(),
-                    "COLUMN_REASON: "
-                            + c.getInt(c.getColumnIndex(DownloadManager.COLUMN_REASON)));
+                Log.d(getClass().getName(),
+                        "COLUMN_ID: "
+                                + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_ID)));
+                Log.d(getClass().getName(),
+                        "COLUMN_BYTES_DOWNLOADED_SO_FAR: "
+                                + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)));
+                Log.d(getClass().getName(),
+                        "COLUMN_LAST_MODIFIED_TIMESTAMP: "
+                                + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP)));
+                Log.d(getClass().getName(),
+                        "COLUMN_LOCAL_URI: "
+                                + c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)));
+                Log.d(getClass().getName(),
+                        "COLUMN_STATUS: "
+                                + c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS)));
+                Log.d(getClass().getName(),
+                        "COLUMN_REASON: "
+                                + c.getInt(c.getColumnIndex(DownloadManager.COLUMN_REASON)));
 
-            Toast.makeText(getActivity(), statusMessage(c), Toast.LENGTH_LONG)
-                    .show();
+                Toast.makeText(getActivity(), statusMessage(c), Toast.LENGTH_LONG)
+                        .show();
 
-            c.close();
-        }
+                c.close();
+            }
     }
 
     private String statusMessage(Cursor c) {
@@ -175,4 +176,11 @@ public class DownloadActivity extends Fragment {
 
         return(msg);
     }
+
+    BroadcastReceiver onComplete=new BroadcastReceiver() {
+        public void onReceive(Context ctxt, Intent intent) {
+            Toast.makeText(ctxt, "Finished", Toast.LENGTH_LONG).show();
+        }
+    };
+
 }

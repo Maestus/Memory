@@ -1,5 +1,10 @@
 package com.example.rached.memory;
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
@@ -37,7 +42,6 @@ public class MainActivity extends AppCompatActivity
                 .build());
 
         getFragmentManager().beginTransaction().add(R.id.content_main, new DownloadActivity()).commit();
-
 
     }
 
@@ -89,4 +93,5 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }
