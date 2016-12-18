@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    class="com.example.rached.memory.DownloadActivity"
+    android:layout_height="50dp"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    android:layout_marginBottom="108dp"
+    tools:context="com.example.rached.memory.MainActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
