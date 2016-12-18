@@ -3,9 +3,13 @@ package com.example.rached.memory;
 import android.Manifest;
 import android.app.DownloadManager;
 import android.app.Fragment;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -24,7 +28,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.System.exit;
@@ -34,10 +37,10 @@ import static java.lang.System.exit;
  */
 
 public class ParseXML extends Fragment{
+    private static String authority = "com.example.rached.memorycontentprovider";
     private XmlPullParser myParser;
     private XmlPullParserFactory xmlFactoryObject;
     InputStream is;
-    List<Collection> collections;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -60,8 +63,6 @@ public class ParseXML extends Fragment{
             File file = new File(sdcard, "/download/test.xml");
             is = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()));
 
-            System.out.println((file.getAbsolutePath()));
-
             myParser.setInput(is, null);
 
             parsefile();
@@ -79,7 +80,6 @@ public class ParseXML extends Fragment{
 
     public void parsefile() throws XmlPullParserException,IOException{
         int event = myParser.getEventType();
-        collections = new ArrayList<Collection>();
         Collection collection = new Collection("Undefined");
         Card card = new Card();
         while (event != XmlPullParser.END_DOCUMENT) {
@@ -95,12 +95,41 @@ public class ParseXML extends Fragment{
                 }
             } else if(event==XmlPullParser.END_TAG) {
                 if("collection".equals(myParser.getName())){
-                    collections.add(collection);
+                    addToDb(collection);//collections.add(collection);
                 }else if("card".equals(myParser.getName())){
                     collection.addCard(card);
                 }
             }
             event = myParser.next();
+        }
+    }
+
+    public void addToDb(Collection c){
+        String n = c.name;
+        for(int i = 0; i < c.cards.size(); i++) {
+            String question = c.cards.get(i).question;
+            String answer = c.cards.get(i).answer;
+            ContentValues values = new ContentValues();
+            values.put("name", n);
+
+
+            ContentResolver resolver = getActivity().getContentResolver();
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme("content").authority(authority).appendPath("collections_table");
+            Uri uri = builder.build();
+            uri = resolver.insert(uri, values);
+
+            long id = ContentUris.parseId(uri);
+            values = new ContentValues();
+            values.put("question", question);
+            values.put("answer", answer);
+            values.put("collection_id", id);
+
+            //builder = builder.clearQuery();
+            builder = new Uri.Builder();
+            builder.scheme("content").authority(authority).appendPath("cards_table");
+            uri = builder.build();
+            uri = resolver.insert(uri, values);
         }
     }
 }
