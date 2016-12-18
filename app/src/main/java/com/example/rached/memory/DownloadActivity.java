@@ -28,7 +28,7 @@ public class DownloadActivity extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View result=inflater.inflate(R.layout.fragment, parent, false);
+        View result=inflater.inflate(R.layout.fragment_download, parent, false);
         mgr = (DownloadManager)getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
 
         if (ContextCompat.checkSelfPermission(this.getActivity(),

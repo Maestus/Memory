@@ -1,10 +1,6 @@
 package com.example.rached.memory;
 
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
@@ -15,11 +11,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static String authority = "com.example.rached.memorycontentprovider";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +43,10 @@ public class MainActivity extends AppCompatActivity
                 .build());
 
         getFragmentManager().beginTransaction().add(R.id.content_main, new DownloadActivity()).commit();
-
-
+        getFragmentManager().beginTransaction().add(R.id.content_main, new MainContentActivity()).commit();
     }
+
+
 
 
     @Override

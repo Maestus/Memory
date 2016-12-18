@@ -1,13 +1,10 @@
 package com.example.rached.memory;
 
 import android.Manifest;
-import android.app.DownloadManager;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import static java.lang.System.exit;
 
@@ -44,7 +40,7 @@ public class ParseXML extends Fragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View result=inflater.inflate(R.layout.fragment, parent, false);
+        View result=inflater.inflate(R.layout.fragment_download, parent, false);
 
         if (ContextCompat.checkSelfPermission(this.getActivity(),
                 Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -74,7 +70,6 @@ public class ParseXML extends Fragment{
             e.printStackTrace();
             exit(1);
         }
-
         return(result);
     }
 
