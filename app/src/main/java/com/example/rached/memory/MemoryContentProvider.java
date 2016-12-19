@@ -97,7 +97,7 @@ public class MemoryContentProvider extends ContentProvider {
         Cursor cursor;
         switch (code) {
             case COLLECTIONS:
-                cursor = db.query("author_table", new String[]{"rowid","_id","nom"}, selection,
+                cursor = db.query("collections_table", new String[]{"rowid","_id","name"}, selection,
                         selectionArgs, null, null, sortOrder);
                 /*
                 cursor.moveToFirst();
@@ -110,8 +110,7 @@ public class MemoryContentProvider extends ContentProvider {
                     Log.d("pepe3",s);
                 }
 */
-                cursor = db.query("author_table", projection, selection,
-                        selectionArgs, null, null, sortOrder);
+                //cursor = db.query("collections_table", projection, selection,selectionArgs, null, null, sortOrder);
                 /*
                 cursor.moveToFirst();
                 while(cursor.moveToNext()){
@@ -124,7 +123,7 @@ public class MemoryContentProvider extends ContentProvider {
 
                 break;
             case CARDS:
-                cursor = db.query("book_table", projection, selection,
+                cursor = db.query("cards_table", projection, selection,
                         selectionArgs, null, null, sortOrder);
                 break;
             default:

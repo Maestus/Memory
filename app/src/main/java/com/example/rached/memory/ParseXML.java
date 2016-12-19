@@ -42,22 +42,14 @@ public class ParseXML extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View result=inflater.inflate(R.layout.fragment_download, parent, false);
 
-        if (ContextCompat.checkSelfPermission(this.getActivity(),
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this.getActivity(),
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    100);
-        }
-
         try {
             xmlFactoryObject = XmlPullParserFactory.newInstance();
             myParser = xmlFactoryObject.newPullParser();
 
+
             File sdcard = Environment.getExternalStorageDirectory();
-            File file = new File(sdcard, "/download/test.xml");
-            is = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()));
+            File file = new File(sdcard, "/Memory/source.xml");
+            is = new BufferedInputStream(new FileInputStream(file.getPath()));
 
             myParser.setInput(is, null);
 
@@ -101,18 +93,19 @@ public class ParseXML extends Fragment{
 
     public void addToDb(Collection c){
         String n = c.name;
+        ContentValues values = new ContentValues();
+        values.put("name", n);
+
+
+        ContentResolver resolver = getActivity().getContentResolver();
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("content").authority(authority).appendPath("collections_table");
+        Uri uri = builder.build();
+        uri = resolver.insert(uri, values);
         for(int i = 0; i < c.cards.size(); i++) {
             String question = c.cards.get(i).question;
             String answer = c.cards.get(i).answer;
-            ContentValues values = new ContentValues();
-            values.put("name", n);
 
-
-            ContentResolver resolver = getActivity().getContentResolver();
-            Uri.Builder builder = new Uri.Builder();
-            builder.scheme("content").authority(authority).appendPath("collections_table");
-            Uri uri = builder.build();
-            uri = resolver.insert(uri, values);
 
             long id = ContentUris.parseId(uri);
             values = new ContentValues();

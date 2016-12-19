@@ -20,6 +20,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import android.support.v4.content.ContextCompat;
 
+import java.io.File;
+
 public class DownloadActivity extends Fragment {
     Uri uri = Uri.parse("https://drive.google.com/uc?export=download&id=0B3Q4cpPks70WbEpOLUxjMnFPTVU");
     private DownloadManager mgr=null;
@@ -30,15 +32,6 @@ public class DownloadActivity extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View result=inflater.inflate(R.layout.fragment_download, parent, false);
         mgr = (DownloadManager)getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-
-        if (ContextCompat.checkSelfPermission(this.getActivity(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this.getActivity(),
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        100);
-        }
 
         startRequest();
         queryStatus();
@@ -71,20 +64,21 @@ public class DownloadActivity extends Fragment {
 
 
     public void startRequest(){
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                    .mkdirs();
 
-            DownloadManager.Request req = new DownloadManager.Request(uri);
+        Environment.getExternalStoragePublicDirectory("Memory")
+                .mkdirs();
 
-            req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI
-                    | DownloadManager.Request.NETWORK_MOBILE)
-                    .setAllowedOverRoaming(false)
-                    .setTitle("Demo")
-                    .setDescription("Something useful. No, really.")
-                    .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
-                            "test.xml");
+        DownloadManager.Request req = new DownloadManager.Request(uri);
 
-            lastDownload = mgr.enqueue(req);
+        req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI
+                | DownloadManager.Request.NETWORK_MOBILE)
+                .setAllowedOverRoaming(false)
+                .setTitle("---")
+                .setDescription("Something useful. No, really.")
+                .setDestinationInExternalPublicDir("Memory","source.xml");
+
+        lastDownload = mgr.enqueue(req);
+
     }
 
     private BroadcastReceiver onEvent=new BroadcastReceiver() {
