@@ -20,9 +20,17 @@
         layout="@layout/fragment_download"
         android:id="@+id/fragment_download" />
 
-    <include
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/list_collection"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/fragment_panel_main"
-        android:id="@+id/fragment_panel" />
+        android:layout_height="match_parent">
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/fragment_panel_main"
+            android:id="@+id/fragment_panel" />
+    </LinearLayout>
+
 </LinearLayout>

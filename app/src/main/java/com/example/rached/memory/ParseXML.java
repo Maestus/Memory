@@ -6,6 +6,9 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -91,33 +94,43 @@ public class ParseXML extends Fragment{
         }
     }
 
-    public void addToDb(Collection c){
+    public void addToDb(Collection c) {
+        boolean insert = false;
         String n = c.name;
         ContentValues values = new ContentValues();
         values.put("name", n);
-
 
         ContentResolver resolver = getActivity().getContentResolver();
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("content").authority(authority).appendPath("collections_table");
         Uri uri = builder.build();
-        uri = resolver.insert(uri, values);
-        for(int i = 0; i < c.cards.size(); i++) {
-            String question = c.cards.get(i).question;
-            String answer = c.cards.get(i).answer;
+        Cursor cursor = resolver.query(uri, null, null, null, null);
+        if (cursor.getCount() != 0) {
+            cursor = resolver.query(uri, null, "name='"+n+"'", null, null);
+            if (cursor.getCount() == 0) {
+                insert = true;
+            }
+        }else insert = true;
 
-
-            long id = ContentUris.parseId(uri);
-            values = new ContentValues();
-            values.put("question", question);
-            values.put("answer", answer);
-            values.put("collection_id", id);
-
-            //builder = builder.clearQuery();
-            builder = new Uri.Builder();
-            builder.scheme("content").authority(authority).appendPath("cards_table");
-            uri = builder.build();
+        if(insert){
             uri = resolver.insert(uri, values);
+            for (int i = 0; i < c.cards.size(); i++) {
+                String question = c.cards.get(i).question;
+                String answer = c.cards.get(i).answer;
+
+
+                long id = ContentUris.parseId(uri);
+                values = new ContentValues();
+                values.put("question", question);
+                values.put("answer", answer);
+                values.put("collection_id", id);
+
+                //builder = builder.clearQuery();
+                builder = new Uri.Builder();
+                builder.scheme("content").authority(authority).appendPath("cards_table");
+                uri = builder.build();
+                uri = resolver.insert(uri, values);
+            }
         }
     }
 }

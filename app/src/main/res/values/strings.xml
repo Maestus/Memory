@@ -20,4 +20,6 @@
     <string name="download_is_nowhere_in_sight">Download is nowhere in sight</string>
     <string name="hi">Ummmm...hi!</string>
     <string name="download_not_found">Download not found!</string>
+
+    <string name="authority">com.example.rached.memorycontentprovider</string>
 </resources>

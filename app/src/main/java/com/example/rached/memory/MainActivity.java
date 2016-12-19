@@ -7,13 +7,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -21,8 +22,13 @@ import java.io.File;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
-
+        implements NavigationView.OnNavigationItemSelectedListener,CollectionsFragmentContent.OnFragmentInteractionListener{
+    private String mAuthority;
+    private String mTagAuteurs = "collections", mTagLivres = "cards";
+    private CollectionsFragmentContent mAuteursFragment;
+    private long mId = -1;
+    private static final String LOG = "CollectionsBD";
+    private static final String SAVE_ID = "saveId";
     final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL = 101;
 
     @Override
@@ -44,12 +50,44 @@ public class MainActivity extends AppCompatActivity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL);
-
+            } else {
+                File sdcard = Environment.getExternalStorageDirectory();
+                sdcard.mkdirs();
+                File source = new File(sdcard, "/Memory/source.xml");
+                if (!source.exists()) {
+                    StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                            .detectNetwork()
+                            .penaltyDeath()
+                            .build());
+                    getFragmentManager().beginTransaction().add(R.id.content_main, new DownloadActivity()).commit();
+                }
             }
         }
+        mAuthority = getResources().getString(R.string.authority);
+        if (savedInstanceState != null) {
+            mId = savedInstanceState.getLong(SAVE_ID, -1L);
+        }
+        /* si l'activite recreee alors enlever les anciens fragments et refaire tout */
+        if (savedInstanceState != null) {
+            FragmentManager fm = getSupportFragmentManager();
+            getSupportFragmentManager()
+                    .popBackStack("debut", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
 
-//      getFragmentManager().beginTransaction().add(R.id.content_main, new MainContentActivity()).commit();
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction();
 
+        mAuteursFragment = CollectionsFragmentContent.newInstance(mAuthority,
+                "collections_table", "name");
+
+        transaction.add(R.id.list_collection, mAuteursFragment, mTagAuteurs);
+
+        transaction.addToBackStack("debut").commit();
+
+        if (mId >= 0) {
+            Log.d(LOG, "mId=" + mId + " call onIdSelection");
+            onIdSelection(mId);
+        }
     }
 
 
@@ -68,9 +106,9 @@ public class MainActivity extends AppCompatActivity
                                 .build());
 
                         getFragmentManager().beginTransaction().add(R.id.content_main, new DownloadActivity()).commit();
+                    } else {
+                        // permission denied!
                     }
-                } else {
-                    // permission denied!
                 }
         }
     }
@@ -122,6 +160,31 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void onIdSelection(long id) {
+        mId = id;
+/*        SupprimerFragment supprimerFragment = SupprimerFragment.newInstance(mAuthority,
+                new String[]{"book_table", "author"}, "title", "author_id", id);
+
+        FragmentManager manager = getSupportFragmentManager();
+        manager.popBackStack("debut",0);
+        FragmentTransaction transaction = manager.beginTransaction();
+
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+        /* remplacer le fragment avec le tag mTagAuteurs par
+         * le fragment supprimerFragment  si l'orientation portrait
+                        */
+
+           /* transaction.replace(R.id.activity_livres_bd, supprimerFragment, mTagLivres);
+
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        } else {
+            /* ajouter si l'orientation landscape */
+            /*transaction.add(R.id.frame2, supprimerFragment, mTagLivres);
+        }
+        transaction.addToBackStack(null).commit();*/
     }
 
 }
