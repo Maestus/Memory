@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -26,7 +28,8 @@ public class CollectionsFragmentContent extends ListFragment {
     private SimpleCursorAdapter adapter;
     private String mAuthority, mTable, mColumn;
     private static final String LOG = "FragmentContent";
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Handler handler = new Handler();
 
     public CollectionsFragmentContent() {
         // Required empty public constructor
@@ -49,9 +52,9 @@ public class CollectionsFragmentContent extends ListFragment {
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        System.out.println("OKOKOKOKOKOKOK");
         super.onCreate(savedInstanceState);
         if (getArguments() == null) {
             throw new RuntimeException(LOG + " missing Arguments");
@@ -97,8 +100,81 @@ public class CollectionsFragmentContent extends ListFragment {
                 adapter.swapCursor(null);
             }
         });
+
+        swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
+        /* the refresh listner.
+        this would be called when the layout is pulled down */
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                // get the new data from you data source
+                // TODO : request data here
+                /* our swipeRefreshLayout needs to be notified when the data is
+                returned in order for it to stop the animation */
+                handler.post(refreshing);
+            }
+        });
     }
 
+    private final Runnable refreshing = new Runnable(){
+        public void run(){
+            try {
+            /* TODO : isRefreshing should be attached to your data request status */
+                if(isRefreshing()){
+                    // re run the verification after 1 second
+                    handler.postDelayed(this, 1000);
+                }else{
+                    // stop the animation after the data is fully loaded
+                    swipeRefreshLayout.setRefreshing(false);
+                    // TODO : update your list with the new data
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+
+    /**
+     * Returns whether the {@link android.support.v4.widget.SwipeRefreshLayout} is currently
+     * refreshing or not.
+     *
+     * @see android.support.v4.widget.SwipeRefreshLayout#isRefreshing()
+     */
+    public boolean isRefreshing() {
+        getLoaderManager().initLoader(0, null, new android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor>() {
+            @Override
+            public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                Uri uri = (new Uri.Builder()).scheme("content")
+                        .authority(mAuthority)
+                        .appendPath(mTable)
+                        .build();
+                Log.d(LOG, "onCreateLoader uri=" + uri.toString());
+                return new android.support.v4.content.CursorLoader(getActivity(), uri,
+                        new String[]{"_id", mColumn},
+                        null, null, null);
+            }
+
+            @Override
+            public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
+                adapter.swapCursor(data);
+                if (data != null) {
+                    Log.d(LOG, "load finished taille=" + data.getCount() + "");
+                } else {
+                    Log.d(LOG, "load finished data null");
+                }
+            }
+
+            @Override
+            public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
+                adapter.swapCursor(null);
+            }
+        });
+        swipeRefreshLayout.setRefreshing(false);
+        return swipeRefreshLayout.isRefreshing();
+    }
 
 
     @Override
@@ -127,13 +203,13 @@ public class CollectionsFragmentContent extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        Log.d(LOG, "clicked dans la liste");
+        Log.d(LOG, "clicked dans la liste : ");
         if(mListener == null){
             Log.d(LOG,"onListItemClick mListener=null");
         }
         mListener.onIdSelection(id);
-
     }
+
 
     /**
      * This interface must be implemented by activities that contain this

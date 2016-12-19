@@ -1,6 +1,7 @@
 package com.example.rached.memory;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity
 
         transaction.add(R.id.list_collection, mAuteursFragment, mTagAuteurs);
 
-        transaction.addToBackStack("debut").commit();
+        transaction.commit();
 
         if (mId >= 0) {
             Log.d(LOG, "mId=" + mId + " call onIdSelection");
@@ -163,28 +164,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onIdSelection(long id) {
-        mId = id;
-/*        SupprimerFragment supprimerFragment = SupprimerFragment.newInstance(mAuthority,
-                new String[]{"book_table", "author"}, "title", "author_id", id);
-
-        FragmentManager manager = getSupportFragmentManager();
-        manager.popBackStack("debut",0);
-        FragmentTransaction transaction = manager.beginTransaction();
-
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-        /* remplacer le fragment avec le tag mTagAuteurs par
-         * le fragment supprimerFragment  si l'orientation portrait
-                        */
-
-           /* transaction.replace(R.id.activity_livres_bd, supprimerFragment, mTagLivres);
-
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        } else {
-            /* ajouter si l'orientation landscape */
-            /*transaction.add(R.id.frame2, supprimerFragment, mTagLivres);
-        }
-        transaction.addToBackStack(null).commit();*/
+        Intent intent = new Intent(this, DisplayCards.class);
+        Bundle b = new Bundle();
+        b.putLong("key", id); //Your id
+        intent.putExtras(b); //Put your id to your next Intent
+        startActivity(intent);
     }
 
 }
