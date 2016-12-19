@@ -2,7 +2,7 @@
 <LinearLayout android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     class="com.example.rached.memory.DownloadActivity"
-    android:layout_height="50dp"
+    android:layout_height="0dp"
     android:layout_alignParentBottom="true"
     android:layout_alignParentLeft="true"
     android:layout_alignParentStart="true"
