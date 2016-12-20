@@ -154,7 +154,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_tool) {
-
+            Intent intent = new Intent(this,AddCard.class);
+            startActivity(intent);
         } else if (id == R.id.nav_manage) {
 
         }

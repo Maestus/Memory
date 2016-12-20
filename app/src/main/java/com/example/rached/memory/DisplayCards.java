@@ -2,16 +2,12 @@ package com.example.rached.memory;
 
 import android.app.ListActivity;
 import android.app.LoaderManager;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -78,6 +74,7 @@ public class DisplayCards extends ListActivity implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         data.moveToFirst();
+        
         while (data.moveToNext()) {
             int i = data.getInt(0);
             Log.d("tata1=", i + "");
