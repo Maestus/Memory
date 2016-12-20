@@ -65,9 +65,9 @@ public class AddCard extends AppCompatActivity
         ContentResolver resolver = getContentResolver();
 
         ContentValues values = new ContentValues();
-        values.put("collections_id",id);
         values.put("question",question);
         values.put("answer",answer);
+        values.put("collection_id",id);
 
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("content").authority(authority).appendPath("cards_table");
@@ -93,7 +93,6 @@ public class AddCard extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
         adapter.swapCursor(data);
         Button ajouter = (Button) findViewById(R.id.ajouter);
         ajouter.setActivated(true);
