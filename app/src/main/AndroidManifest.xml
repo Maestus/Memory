@@ -24,6 +24,7 @@
             android:authorities="com.example.rached.memorycontentprovider"
             android:enabled="true"
             android:exported="true" />
+        <activity android:name=".DisplayCards" />
     </application>
 
 </manifest>

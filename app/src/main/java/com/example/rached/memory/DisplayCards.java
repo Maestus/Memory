@@ -2,8 +2,10 @@ package com.example.rached.memory;
 
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -42,7 +44,7 @@ public class DisplayCards extends ListActivity implements LoaderManager.LoaderCa
                 new String[]{mColumn},
                 new int[]{android.R.id.text1}, 0);
 
-        final ListView view = (ListView) findViewById(R.id.cards_display);
+        final ListView view = getListView();
         view.setAdapter(adapter);
 
         LoaderManager manager = getLoaderManager();
@@ -63,14 +65,14 @@ public class DisplayCards extends ListActivity implements LoaderManager.LoaderCa
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri;
+        Intent intent = getIntent();
         Uri.Builder builder = new Uri.Builder();
         uri = builder.scheme("content")
                 .authority(authority)
-                .appendPath("author_table")
+                .appendPath("cards_table")
                 .build();
-        return new CursorLoader(this, uri, new String[]{"_id", "nom"},
-                null, null, null);
-
+        return new CursorLoader(this, uri, new String[]{"_id"},
+                "collection_id='"+intent.getLongExtra("key",1L)+"'", null, null);
     }
 
     @Override
@@ -78,9 +80,7 @@ public class DisplayCards extends ListActivity implements LoaderManager.LoaderCa
         data.moveToFirst();
         while (data.moveToNext()) {
             int i = data.getInt(0);
-            String s = data.getString(1);
             Log.d("tata1=", i + "");
-            Log.d("tatal2", s);
         }
 
         adapter.swapCursor(data);

@@ -1,11 +1,14 @@
 package com.example.rached.memory;
 
+import android.content.ClipData;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -16,11 +19,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import java.util.List;
+
 /**
  * Created by rached on 18/12/16.
  */
 
-public class CollectionsFragmentContent extends ListFragment {
+public class CollectionsFragmentContent extends ListFragment implements  LoaderManager.LoaderCallbacks<Cursor> {
     private static final String AUTHORITY = "authority";
     private static final String TABLE = "table";
     private static final String COLUMN = "column";
@@ -64,6 +69,7 @@ public class CollectionsFragmentContent extends ListFragment {
         mTable = getArguments().getString(TABLE);
         mColumn = getArguments().getString(COLUMN);
 
+
         adapter = new SimpleCursorAdapter(
                 getActivity(),/*context*/
                 android.R.layout.simple_list_item_1,
@@ -72,34 +78,7 @@ public class CollectionsFragmentContent extends ListFragment {
                 new int[]{android.R.id.text1}, 0);
             /* dans ListFragment utiliser setListAdapter() au lieu de setAdapter() */
         setListAdapter(adapter);
-        getLoaderManager().initLoader(0, null, new android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor>() {
-            @Override
-            public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-                Uri uri = (new Uri.Builder()).scheme("content")
-                        .authority(mAuthority)
-                        .appendPath(mTable)
-                        .build();
-                Log.d(LOG, "onCreateLoader uri=" + uri.toString());
-                return new android.support.v4.content.CursorLoader(getActivity(), uri,
-                        new String[]{"_id", mColumn},
-                        null, null, null);
-            }
 
-            @Override
-            public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
-                adapter.swapCursor(data);
-                if (data != null) {
-                    Log.d(LOG, "load finished taille=" + data.getCount() + "");
-                } else {
-                    Log.d(LOG, "load finished data null");
-                }
-            }
-
-            @Override
-            public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
-                adapter.swapCursor(null);
-            }
-        });
 
         swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
         /* the refresh listner.
@@ -108,13 +87,55 @@ public class CollectionsFragmentContent extends ListFragment {
 
             @Override
             public void onRefresh() {
-                // get the new data from you data source
-                // TODO : request data here
-                /* our swipeRefreshLayout needs to be notified when the data is
-                returned in order for it to stop the animation */
-                handler.post(refreshing);
+                refreshContent();
             }
         });
+        getLoaderManager().initLoader(100, null, this);
+    }
+
+    private void refreshContent(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(mAuthority);
+                ContentResolver resolver = getActivity().getContentResolver();
+                Uri.Builder builder = new Uri.Builder();
+                builder.scheme("content").authority(mAuthority).appendPath("collections_table");
+                Uri uri = builder.build();
+                Cursor cursor = resolver.query(uri, null, null, null, null);
+                adapter.swapCursor(cursor);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        },500);
+    }
+
+    @Override
+    public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
+        getLoaderManager().initLoader(100, null, this);
+        swipeRefreshLayout.setRefreshing(false);
+        adapter.swapCursor(null);
+    }
+
+    @Override
+    public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
+        adapter.swapCursor(data);
+        if (data != null) {
+            Log.d(LOG, "load finished taille=" + data.getCount() + "");
+        } else {
+            Log.d(LOG, "load finished data null");
+        }
+    }
+
+    @Override
+    public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri uri = (new Uri.Builder()).scheme("content")
+                .authority(mAuthority)
+                .appendPath(mTable)
+                .build();
+        Log.d(LOG, "onCreateLoader uri=" + uri.toString());
+        return new android.support.v4.content.CursorLoader(getActivity(), uri,
+                new String[]{"_id", mColumn},
+                null, null, null);
     }
 
     private final Runnable refreshing = new Runnable(){
@@ -144,35 +165,6 @@ public class CollectionsFragmentContent extends ListFragment {
      * @see android.support.v4.widget.SwipeRefreshLayout#isRefreshing()
      */
     public boolean isRefreshing() {
-        getLoaderManager().initLoader(0, null, new android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor>() {
-            @Override
-            public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-                Uri uri = (new Uri.Builder()).scheme("content")
-                        .authority(mAuthority)
-                        .appendPath(mTable)
-                        .build();
-                Log.d(LOG, "onCreateLoader uri=" + uri.toString());
-                return new android.support.v4.content.CursorLoader(getActivity(), uri,
-                        new String[]{"_id", mColumn},
-                        null, null, null);
-            }
-
-            @Override
-            public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
-                adapter.swapCursor(data);
-                if (data != null) {
-                    Log.d(LOG, "load finished taille=" + data.getCount() + "");
-                } else {
-                    Log.d(LOG, "load finished data null");
-                }
-            }
-
-            @Override
-            public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
-                adapter.swapCursor(null);
-            }
-        });
-        swipeRefreshLayout.setRefreshing(false);
         return swipeRefreshLayout.isRefreshing();
     }
 
