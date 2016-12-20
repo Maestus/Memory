@@ -19,6 +19,15 @@ public class MemoryContentProvider extends ContentProvider {
     private static final int COLLECTIONS = 1;
     private static final int CARDS = 2;
     private static final int ONE_CARD = 3;
+    private static final int TRIVIAL_CARDS = 4;
+    private static final int EASY_CARDS = 5;
+    private static final int MEDIUM_CARDS = 6;
+    private static final int HARD_CARDS = 7;
+    private static final int ONE_TRIVIAL_CARDS = 8;
+    private static final int ONE_EASY_CARDS = 9;
+    private static final int ONE_MEDIUM_CARDS = 10;
+    private static final int ONE_HARD_CARDS = 11;
+
     //private static final String[] path = new String[]{"author_table", "book_table"};
 
     private static final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -27,6 +36,14 @@ public class MemoryContentProvider extends ContentProvider {
         matcher.addURI(authority, "collections_table", COLLECTIONS);
         matcher.addURI(authority, "cards_table", CARDS);
         matcher.addURI(authority, "cards/*", ONE_CARD);
+        matcher.addURI(authority, "trivial_cards_table", TRIVIAL_CARDS);
+        matcher.addURI(authority, "easy_cards_table", EASY_CARDS);
+        matcher.addURI(authority, "medium_cards_table", MEDIUM_CARDS);
+        matcher.addURI(authority, "hard_cards_table", HARD_CARDS);
+        matcher.addURI(authority, "trivial/*", ONE_TRIVIAL_CARDS);
+        matcher.addURI(authority, "easy/*", ONE_EASY_CARDS);
+        matcher.addURI(authority, "medium/*", ONE_MEDIUM_CARDS);
+        matcher.addURI(authority, "hard/*", ONE_HARD_CARDS);
     }
 
 
@@ -38,10 +55,15 @@ public class MemoryContentProvider extends ContentProvider {
         SQLiteDatabase db = helper.getWritableDatabase();
         int code = matcher.match(uri);
         int i;
+        long id;
         switch (code) {
             case ONE_CARD:
-                long id = ContentUris.parseId(uri);
+                id = ContentUris.parseId(uri);
                 i=db.delete("cards_table", "_id=" + id, null);
+                break;
+            case ONE_HARD_CARDS:
+                id = ContentUris.parseId(uri);
+                i=db.delete("hard_cards_table", "_id=" + id, null);
                 break;
             default:
                 throw new UnsupportedOperationException("Not yet implemented");
@@ -72,6 +94,22 @@ public class MemoryContentProvider extends ContentProvider {
             case CARDS:
                 id = db.insert("cards_table", null, values);
                 builder.appendPath("cards_table");
+                break;
+            case TRIVIAL_CARDS:
+                id = db.insert("trivial_cards_table", null, values);
+                builder.appendPath("trivial_cards_table");
+                break;
+            case EASY_CARDS:
+                id = db.insert("easy_cards_table", null, values);
+                builder.appendPath("easy_cards_table");
+                break;
+            case MEDIUM_CARDS:
+                id = db.insert("medium_cards_table", null, values);
+                builder.appendPath("medium_cards_table");
+                break;
+            case HARD_CARDS:
+                id = db.insert("hard_cards_table", null, values);
+                builder.appendPath("hard_cards_table");
                 break;
             default:
                 throw new UnsupportedOperationException("Not yet implemented");

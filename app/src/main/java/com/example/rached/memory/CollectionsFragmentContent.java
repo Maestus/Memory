@@ -83,13 +83,15 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
         swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
         /* the refresh listner.
         this would be called when the layout is pulled down */
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        if(swipeRefreshLayout != null) {
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
-            @Override
-            public void onRefresh() {
-                refreshContent();
-            }
-        });
+                @Override
+                public void onRefresh() {
+                    refreshContent();
+                }
+            });
+        }
         getLoaderManager().initLoader(100, null, this);
     }
 

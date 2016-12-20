@@ -113,12 +113,8 @@ public class ParseXML extends Fragment{
         }else insert = true;
 
         if(insert){
-            resolver.insert(uri, values);
-            long id = 1L;
-            cursor = resolver.query(uri, new String[]{"_id"}, null, null, null);
-            if (cursor.moveToLast()) {
-                id = cursor.getLong(0);
-            }
+            uri = resolver.insert(uri, values);
+            long id = ContentUris.parseId(uri);
             for (int i = 0; i < c.cards.size(); i++) {
                 String question = c.cards.get(i).question;
                 String answer = c.cards.get(i).answer;
@@ -133,6 +129,16 @@ public class ParseXML extends Fragment{
                 builder.scheme("content").authority(authority).appendPath("cards_table");
                 uri = builder.build();
                 uri = resolver.insert(uri, values);
+
+                long id_card = ContentUris.parseId(uri);
+
+                values = new ContentValues();
+                values.put("card_id", id_card);
+
+                builder = new Uri.Builder();
+                builder.scheme("content").authority(authority).appendPath("hard_cards_table");
+                uri = builder.build();
+                resolver.insert(uri, values);
             }
         }
     }
