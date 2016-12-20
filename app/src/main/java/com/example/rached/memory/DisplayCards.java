@@ -19,7 +19,6 @@ import android.widget.SimpleCursorAdapter;
 
 public class DisplayCards extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor>{
     private static String authority = "com.example.rached.memorycontentprovider";
-    private CollectionsFragmentContent.OnFragmentInteractionListener mListener;
     private SimpleCursorAdapter adapter;
     private String mAuthority, mTable, mColumn;
     private static final String LOG = "DisplayCards";
@@ -31,12 +30,12 @@ public class DisplayCards extends ListActivity implements LoaderManager.LoaderCa
 
         mAuthority = authority;
         mTable = "cards_table";
-        mColumn = "_id";
+        mColumn = "question";
 
         adapter = new SimpleCursorAdapter(
-                this,/*context*/
+                this,
                 android.R.layout.simple_list_item_1,
-                null, /*Cursor - null initialement */
+                null,
                 new String[]{mColumn},
                 new int[]{android.R.id.text1}, 0);
 
@@ -52,10 +51,8 @@ public class DisplayCards extends ListActivity implements LoaderManager.LoaderCa
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Log.d(LOG, "clicked dans la liste : ");
-        if(mListener == null){
-            Log.d(LOG,"onListItemClick mListener=null");
-        }
-        mListener.onIdSelection(id);
+        Log.d(LOG,"onListItemClick mListener=null");
+        //mListener.onIdSelection(id);
     }
 
     @Override
@@ -67,21 +64,17 @@ public class DisplayCards extends ListActivity implements LoaderManager.LoaderCa
                 .authority(authority)
                 .appendPath("cards_table")
                 .build();
-        return new CursorLoader(this, uri, new String[]{"_id"},
-                "collection_id='"+intent.getLongExtra("key",1L)+"'", null, null);
+        return new CursorLoader(this, uri, new String[]{"_id", mColumn}, "collection_id='"+intent.getLongExtra("key",1L)+"'", null, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         data.moveToFirst();
-        
+
         while (data.moveToNext()) {
-            int i = data.getInt(0);
-            Log.d("tata1=", i + "");
+            Log.d("contient = ", data.getString(data.getColumnIndex("question")));
         }
-
         adapter.swapCursor(data);
-
     }
 
     @Override

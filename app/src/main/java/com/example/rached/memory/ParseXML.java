@@ -113,13 +113,16 @@ public class ParseXML extends Fragment{
         }else insert = true;
 
         if(insert){
-            uri = resolver.insert(uri, values);
+            resolver.insert(uri, values);
+            long id = 1L;
+            cursor = resolver.query(uri, new String[]{"_id"}, null, null, null);
+            if (cursor.moveToLast()) {
+                id = cursor.getLong(0);
+            }
             for (int i = 0; i < c.cards.size(); i++) {
                 String question = c.cards.get(i).question;
                 String answer = c.cards.get(i).answer;
 
-
-                long id = ContentUris.parseId(uri);
                 values = new ContentValues();
                 values.put("question", question);
                 values.put("answer", answer);
