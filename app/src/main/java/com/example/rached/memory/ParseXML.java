@@ -136,7 +136,7 @@ public class ParseXML extends Fragment{
                 values.put("card_id", id_card);
 
                 builder = new Uri.Builder();
-                builder.scheme("content").authority(authority).appendPath("hard_cards_table");
+                builder.scheme("content").authority(authority).appendPath("just_added_cards_table");
                 uri = builder.build();
                 resolver.insert(uri, values);
             }

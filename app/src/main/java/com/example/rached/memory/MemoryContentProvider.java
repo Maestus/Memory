@@ -23,10 +23,12 @@ public class MemoryContentProvider extends ContentProvider {
     private static final int EASY_CARDS = 5;
     private static final int MEDIUM_CARDS = 6;
     private static final int HARD_CARDS = 7;
-    private static final int ONE_TRIVIAL_CARDS = 8;
-    private static final int ONE_EASY_CARDS = 9;
-    private static final int ONE_MEDIUM_CARDS = 10;
-    private static final int ONE_HARD_CARDS = 11;
+    private static final int JUST_ADDED_CARDS = 8;
+    private static final int ONE_TRIVIAL_CARDS = 9;
+    private static final int ONE_EASY_CARDS = 10;
+    private static final int ONE_MEDIUM_CARDS = 11;
+    private static final int ONE_HARD_CARDS = 12;
+    private static final int ONE_JUST_ADDED_CARDS = 13;
 
     //private static final String[] path = new String[]{"author_table", "book_table"};
 
@@ -36,6 +38,7 @@ public class MemoryContentProvider extends ContentProvider {
         matcher.addURI(authority, "collections_table", COLLECTIONS);
         matcher.addURI(authority, "cards_table", CARDS);
         matcher.addURI(authority, "cards/*", ONE_CARD);
+        matcher.addURI(authority, "just_added_cards_table", JUST_ADDED_CARDS);
         matcher.addURI(authority, "trivial_cards_table", TRIVIAL_CARDS);
         matcher.addURI(authority, "easy_cards_table", EASY_CARDS);
         matcher.addURI(authority, "medium_cards_table", MEDIUM_CARDS);
@@ -44,6 +47,7 @@ public class MemoryContentProvider extends ContentProvider {
         matcher.addURI(authority, "easy/*", ONE_EASY_CARDS);
         matcher.addURI(authority, "medium/*", ONE_MEDIUM_CARDS);
         matcher.addURI(authority, "hard/*", ONE_HARD_CARDS);
+        matcher.addURI(authority, "just_added/*", ONE_JUST_ADDED_CARDS);
     }
 
 
@@ -111,6 +115,10 @@ public class MemoryContentProvider extends ContentProvider {
                 id = db.insert("hard_cards_table", null, values);
                 builder.appendPath("hard_cards_table");
                 break;
+            case JUST_ADDED_CARDS:
+                id = db.insert("just_added_cards_table", null, values);
+                builder.appendPath("just_added_cards_table");
+                break;
             default:
                 throw new UnsupportedOperationException("Not yet implemented");
         }
@@ -162,6 +170,26 @@ public class MemoryContentProvider extends ContentProvider {
                 break;
             case CARDS:
                 cursor = db.query("cards_table", projection, selection,
+                        selectionArgs, null, null, sortOrder);
+                break;
+            case HARD_CARDS:
+                cursor = db.query("hard_cards_table", projection, selection,
+                        selectionArgs, null, null, sortOrder);
+                break;
+            case MEDIUM_CARDS:
+                cursor = db.query("medium_cards_table", projection, selection,
+                        selectionArgs, null, null, sortOrder);
+                break;
+            case EASY_CARDS:
+                cursor = db.query("easy_cards_table", projection, selection,
+                        selectionArgs, null, null, sortOrder);
+                break;
+            case TRIVIAL_CARDS:
+                cursor = db.query("trivial_cards_table", projection, selection,
+                        selectionArgs, null, null, sortOrder);
+                break;
+            case JUST_ADDED_CARDS:
+                cursor = db.query("just_added_cards_table", projection, selection,
                         selectionArgs, null, null, sortOrder);
                 break;
             default:

@@ -23,22 +23,26 @@ public class MainDB extends SQLiteOpenHelper {
             " _id integer primary key "        +
             ");";
     private String trivial_cards_table = "create table trivial_cards_table (" +
-            " last_time datetime not null,"                   +
+            " last_time datetime DEFAULT CURRENT_TIMESTAMP,"                   +
             " card_id int references collections_table ,"          +
             " _id integer primary key "        +
             ");";
     private String easy_cards_table = "create table easy_cards_table (" +
-            " last_time datetime not null,"                   +
+            " last_time datetime DEFAULT CURRENT_TIMESTAMP,"                   +
             " card_id int references collections_table ,"          +
             " _id integer primary key "        +
             ");";
     private String medium_cards_table = "create table medium_cards_table (" +
-            " last_time datetime not null,"                   +
+            " last_time datetime DEFAULT CURRENT_TIMESTAMP,"                   +
             " card_id int references collections_table ,"          +
             " _id integer primary key "        +
             ");";
     private String hard_cards_table = "create table hard_cards_table (" +
-            " last_time datetime,"                   +
+            " last_time datetime DEFAULT CURRENT_TIMESTAMP,"                   +
+            " card_id int references collections_table ,"          +
+            " _id integer primary key "        +
+            ");";
+    private String just_added_cards_table = "create table just_added_cards_table (" +
             " card_id int references collections_table ,"          +
             " _id integer primary key "        +
             ");";
@@ -63,6 +67,7 @@ public class MainDB extends SQLiteOpenHelper {
         db.execSQL(easy_cards_table);
         db.execSQL(medium_cards_table);
         db.execSQL(hard_cards_table);
+        db.execSQL(just_added_cards_table);
     }
 
     @Override
@@ -74,6 +79,7 @@ public class MainDB extends SQLiteOpenHelper {
             db.execSQL("drop table if exists easy_cards_table ;");
             db.execSQL("drop table if exists medium_cards_table ;");
             db.execSQL("drop table if exists hard_cards_table ;");
+            db.execSQL("drop table if exists just_added_cards_table ;");
             onCreate(db);
         }
     }
