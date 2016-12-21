@@ -1,105 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:weightSum="1"
-    android:id="@+id/card_content"
-    android:baselineAligned="false">
-
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/question"
-        android:layout_weight="0.26"
-        android:layout_marginTop="50dp"
-        android:gravity="center" />
-
-    <View
-        android:layout_height="1px"
-        android:layout_width="fill_parent"
-        android:background="@color/colorPrimary"
-        android:layout_marginTop="100dp"
-        android:layout_marginBottom="100dp"
-        android:gravity="center"
-        android:visibility="invisible"
-        android:id="@+id/separator"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/answer"
-        android:visibility="invisible"
-        android:layout_weight="0.25"
-        android:gravity="center" />
-
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="0.15"
-        android:gravity="center|bottom"
-        android:orientation="horizontal"
-        android:foregroundGravity="bottom"
-        android:layout_gravity="bottom">
+        android:layout_height="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:weightSum="1"
+        android:id="@+id/card_content"
+        android:baselineAligned="false">
 
-        <Button
-            android:id="@+id/trivial"
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/question"
+            android:layout_weight="0.26"
+            android:layout_marginTop="50dp"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textStyle="bold"/>
+
+        <View
+            android:layout_height="3dp"
+            android:layout_width="fill_parent"
+            android:background="@color/colorPrimary"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
             android:visibility="invisible"
-            android:textColor="@color/colorPrimary"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center"
-            android:text="Triviale"
-            android:onClick="set_trivial" />
+            android:id="@+id/separator"/>
 
-        <Button
-            android:id="@+id/easy"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/answer"
             android:visibility="invisible"
-            android:textColor="@color/colorPrimary"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center"
-            android:text="Easy"
-            android:onClick="easy" />
+            android:layout_weight="0.25"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textStyle="bold"/>
 
-        <Button
-            android:id="@+id/give_answer"
-            android:textColor="@color/colorPrimary"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center"
-            android:text="Answer"
             android:layout_weight="1"
-            android:onClick="answer" />
+            android:gravity="center|bottom"
+            android:orientation="horizontal" >
 
-        <Button
-            android:id="@+id/medium"
-            android:visibility="invisible"
-            android:textColor="@color/colorPrimary"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center"
-            android:text="Medium"
-            android:onClick="medium" />
+            <Button
+                android:id="@+id/trivial"
+                android:visibility="invisible"
+                android:textColor="@color/colorPrimary"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center"
+                android:text="Triviale"
+                android:onClick="set_trivial" />
 
-        <Button
-            android:id="@+id/hard"
-            android:visibility="invisible"
-            android:textColor="@color/colorPrimary"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center"
-            android:text="Hard"
-            android:onClick="hard" />
+            <Button
+                android:id="@+id/easy"
+                android:visibility="invisible"
+                android:textColor="@color/colorPrimary"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center"
+                android:text="Easy"
+                android:onClick="easy" />
 
+            <Button
+                android:id="@+id/give_answer"
+                android:textColor="@color/colorPrimary"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_horizontal|center"
+                android:text="Answer"
+                android:onClick="answer" />
+
+            <Button
+                android:id="@+id/medium"
+                android:visibility="invisible"
+                android:textColor="@color/colorPrimary"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center"
+                android:text="Medium"
+                android:onClick="medium" />
+
+            <Button
+                android:id="@+id/hard"
+                android:visibility="invisible"
+                android:textColor="@color/colorPrimary"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center"
+                android:text="Hard"
+                android:onClick="hard" />
+
+
+        </LinearLayout>
 
     </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

@@ -1,24 +1,20 @@
 package com.example.rached.memory;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.example.rached.memory.R.id.textView;
-
-public class DisplayCards extends Activity {
+public class DisplayCards extends AppCompatActivity {
     private static String authority = "com.example.rached.memorycontentprovider";
     ContentResolver resolver;
     private String hard,medium,easy,trivial,just_added;
@@ -28,8 +24,9 @@ public class DisplayCards extends Activity {
     String card_id,question,answer;
     static final String STATE_LEVEL = "Card_id";
     static final String STATE_ANSWER = "pressed_give_answer";
+    static final String STATE_PASS = "pressed_choice";
     int myCurrentCard;
-    boolean pressed_give_answer = false;
+    boolean pressed_choice = false, pressed_give_answer = false, choosed_card = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,26 +49,59 @@ public class DisplayCards extends Activity {
         createCursorHard();
         createCursorMedium();
         createCursorEasy();
-        //createCursorTrivial(); Extention
+        //createCursorTrivial(); extension
 
         ListedAllCardsGet();
-
-        //System.out.println("Display : "+cards_id.size());
 
         if(savedInstanceState == null){
             if(cards_id.size() > 0) {
                 Random r = new Random();
                 myCurrentCard = r.nextInt(cards_id.size());
+                choosed_card = true;
             }
         }else {
             myCurrentCard = savedInstanceState.getInt(STATE_LEVEL);
             pressed_give_answer = savedInstanceState.getBoolean(STATE_ANSWER);
+            choosed_card = true;
+            //pressed_choice = savedInstanceState.getBoolean(STATE_PASS);
             if(pressed_give_answer){
                 answer_display();
             }
         }
-
         play();
+    }
+
+    public void play(){
+        if(cards_id.size() > 0) {
+            if(!choosed_card) {
+                Random r = new Random();
+                myCurrentCard = r.nextInt(cards_id.size());
+            }
+            card_id = cards_id.get(myCurrentCard);
+            Uri.Builder builder = new Uri.Builder();
+            Uri uri = builder.scheme("content")
+                    .authority(authority)
+                    .appendPath("cards_table")
+                    .build();
+            card = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "'" + card_id + "' = _id", null, null);
+            if (card != null) {
+                card.moveToFirst();
+                question = card.getString(card.getColumnIndex("question"));
+                answer = card.getString(card.getColumnIndex("answer"));
+                TextView t1 = (TextView) findViewById(R.id.question);
+                TextView t2 = (TextView) findViewById(R.id.answer);
+                t1.setText("");
+                t1.append(question);
+                t2.setText("");
+                t2.append(answer);
+            }
+        }else{
+            TextView t1 = (TextView) findViewById(R.id.question);
+            t1.setText("");
+            t1.append("No more work to do");
+            Button response = (Button) findViewById(R.id.give_answer);
+            response.setVisibility(View.INVISIBLE);
+        }
     }
 
 
@@ -80,7 +110,7 @@ public class DisplayCards extends Activity {
         // Save the user's current game state
         savedInstanceState.putInt(STATE_LEVEL, myCurrentCard);
         savedInstanceState.putBoolean(STATE_ANSWER, pressed_give_answer);
-
+        savedInstanceState.putBoolean(STATE_PASS, pressed_choice);
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -143,24 +173,83 @@ public class DisplayCards extends Activity {
         setInvisibleAnswerAndButtons();
         card.close();
         cards_id.remove(card_id);
+        choosed_card = false;
+        pressed_give_answer = false;
         play();
     }
 
     public void easy(View v){
+        System.out.println("TRIVIALE");
+        card.moveToFirst();
+        Uri.Builder builder = new Uri.Builder();
+        Uri uri = builder.scheme("content")
+                .authority(authority)
+                .appendPath(easy)
+                .build();
 
+        long id = card.getLong(card.getColumnIndex("_id"));
+
+        ContentValues values = new ContentValues();
+        values.put("card_id", id);
+
+        resolver.insert(uri, values);
+
+        removeFromOtherCollections(easy);
+        setInvisibleAnswerAndButtons();
+        card.close();
         cards_id.remove(card_id);
+        choosed_card = false;
+        pressed_give_answer = false;
         play();
     }
 
     public void medium(View v){
+        System.out.println("TRIVIALE");
+        card.moveToFirst();
+        Uri.Builder builder = new Uri.Builder();
+        Uri uri = builder.scheme("content")
+                .authority(authority)
+                .appendPath(medium)
+                .build();
 
+        long id = card.getLong(card.getColumnIndex("_id"));
+
+        ContentValues values = new ContentValues();
+        values.put("card_id", id);
+
+        resolver.insert(uri, values);
+
+        removeFromOtherCollections(medium);
+        setInvisibleAnswerAndButtons();
+        card.close();
         cards_id.remove(card_id);
+        choosed_card = false;
+        pressed_give_answer = false;
         play();
     }
 
     public void hard(View v){
+        System.out.println("HARD");
+        card.moveToFirst();
+        Uri.Builder builder = new Uri.Builder();
+        Uri uri = builder.scheme("content")
+                .authority(authority)
+                .appendPath(hard)
+                .build();
 
+        long id = card.getLong(card.getColumnIndex("_id"));
+
+        ContentValues values = new ContentValues();
+        values.put("card_id", id);
+
+        resolver.insert(uri, values);
+
+        removeFromOtherCollections(hard);
+        setInvisibleAnswerAndButtons();
+        card.close();
         cards_id.remove(card_id);
+        choosed_card = false;
+        pressed_give_answer = false;
         play();
     }
 
@@ -189,37 +278,6 @@ public class DisplayCards extends Activity {
 
         Button hard = (Button) findViewById(R.id.hard);
         hard.setVisibility(View.VISIBLE);
-    }
-
-    public void play(){
-        if(cards_id.size() > 0) {
-            Random r = new Random();
-            myCurrentCard = r.nextInt(cards_id.size());
-            card_id = cards_id.get(myCurrentCard);
-            Uri.Builder builder = new Uri.Builder();
-            Uri uri = builder.scheme("content")
-                    .authority(authority)
-                    .appendPath("cards_table")
-                    .build();
-            card = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "'" + card_id + "' = _id", null, null);
-            if (card != null) {
-                card.moveToFirst();
-                question = card.getString(card.getColumnIndex("question"));
-                answer = card.getString(card.getColumnIndex("answer"));
-                TextView t1 = (TextView) findViewById(R.id.question);
-                TextView t2 = (TextView) findViewById(R.id.answer);
-                t1.setText("");
-                t1.append(question);
-                t2.setText("");
-                t2.append(answer);
-            }
-        }else{
-            TextView t1 = (TextView) findViewById(R.id.question);
-            t1.setText("");
-            t1.append("No more work to do");
-            Button response = (Button) findViewById(R.id.give_answer);
-            response.setVisibility(View.INVISIBLE);
-        }
     }
 
     public void ListedAllCardsGet(){
@@ -346,7 +404,7 @@ public class DisplayCards extends Activity {
                 .authority(authority)
                 .appendPath(hard)
                 .build();
-        hard_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, "strftime('%s','now') - strftime('%s',last_time) >= 3500", null, null);
+        hard_cursor = resolver.query(uri, new String[]{"_id", "card_id", "last_time"}, "strftime('%s','now') - strftime('%s',last_time) >= 1000", null, null);
     }
 
     public void createCursorMedium() {
