@@ -2,21 +2,26 @@ package com.example.rached.memory;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.example.rached.memory.R.id.textView;
+
 public class DisplayCards extends Activity {
     private static String authority = "com.example.rached.memorycontentprovider";
     ContentResolver resolver;
-    private String hard,medium,easy,trivial;
+    private String hard,medium,easy,trivial,just_added;
     private String column_question,column_answer;
     private  Cursor card,hard_cursor,medium_cursor,easy_cursor,trivial_cursor,just_added_cursor;
     List<String> cards_id = new ArrayList<>();
@@ -35,6 +40,7 @@ public class DisplayCards extends Activity {
         medium = "medium_cards_table";
         easy = "easy_cards_table";
         trivial = "trivial_cards_table";
+        just_added = "just_added_cards_table";
         column_question = "question";
         column_answer = "answer";
 
@@ -46,15 +52,17 @@ public class DisplayCards extends Activity {
         createCursorHard();
         createCursorMedium();
         createCursorEasy();
-        createCursorTrivial();
+        //createCursorTrivial(); Extention
 
         ListedAllCardsGet();
 
         //System.out.println("Display : "+cards_id.size());
 
         if(savedInstanceState == null){
-            Random r = new Random();
-            myCurrentCard = r.nextInt(cards_id.size());
+            if(cards_id.size() > 0) {
+                Random r = new Random();
+                myCurrentCard = r.nextInt(cards_id.size());
+            }
         }else {
             myCurrentCard = savedInstanceState.getInt(STATE_LEVEL);
             pressed_give_answer = savedInstanceState.getBoolean(STATE_ANSWER);
@@ -75,6 +83,85 @@ public class DisplayCards extends Activity {
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+
+    public void removeFromOtherCollections(String requestFrom){
+        String [] collections = {just_added, trivial, easy, medium, hard};
+        String[] arg = new String[] { card_id };
+        Uri.Builder builder;
+        for(String collection : collections) {
+            if(!collection.equals(requestFrom)) {
+                builder = new Uri.Builder();
+                Uri uri = builder.scheme("content")
+                        .authority(authority)
+                        .appendPath(collection)
+                        .build();
+                resolver.delete(uri,"card_id=?",arg);
+            }
+        }
+    }
+
+    public void setInvisibleAnswerAndButtons(){
+        View separator = findViewById(R.id.separator);
+        separator.setVisibility(View.INVISIBLE);
+        TextView t2 = (TextView) findViewById(R.id.answer);
+        t2.setVisibility(View.INVISIBLE);
+        Button response = (Button) findViewById(R.id.give_answer);
+        response.setEnabled(true);
+
+        Button trivial = (Button) findViewById(R.id.trivial);
+        trivial.setVisibility(View.INVISIBLE);
+
+        Button easy = (Button) findViewById(R.id.easy);
+        easy.setVisibility(View.INVISIBLE);
+
+        Button medium = (Button) findViewById(R.id.medium);
+        medium.setVisibility(View.INVISIBLE);
+
+        Button hard = (Button) findViewById(R.id.hard);
+        hard.setVisibility(View.INVISIBLE);
+    }
+
+    public void set_trivial(View v){
+        System.out.println("TRIVIALE");
+        card.moveToFirst();
+        Uri.Builder builder = new Uri.Builder();
+        Uri uri = builder.scheme("content")
+                .authority(authority)
+                .appendPath(trivial)
+                .build();
+
+        long id = card.getLong(card.getColumnIndex("_id"));
+
+        ContentValues values = new ContentValues();
+        values.put("card_id", id);
+
+        resolver.insert(uri, values);
+
+        removeFromOtherCollections(trivial);
+        setInvisibleAnswerAndButtons();
+        card.close();
+        cards_id.remove(card_id);
+        play();
+    }
+
+    public void easy(View v){
+
+        cards_id.remove(card_id);
+        play();
+    }
+
+    public void medium(View v){
+
+        cards_id.remove(card_id);
+        play();
+    }
+
+    public void hard(View v){
+
+        cards_id.remove(card_id);
+        play();
     }
 
 
@@ -105,21 +192,33 @@ public class DisplayCards extends Activity {
     }
 
     public void play(){
-        card_id = cards_id.get(myCurrentCard);
-        Uri.Builder builder = new Uri.Builder();
-        Uri uri = builder.scheme("content")
-                .authority(authority)
-                .appendPath("cards_table")
-                .build();
-        card = resolver.query(uri, new String[]{"_id", column_question, column_answer},"'"+card_id+"' = _id", null, null);
-        if(card != null) {
-            card.moveToFirst();
-            question = card.getString(card.getColumnIndex("question"));
-            answer = card.getString(card.getColumnIndex("answer"));
+        if(cards_id.size() > 0) {
+            Random r = new Random();
+            myCurrentCard = r.nextInt(cards_id.size());
+            card_id = cards_id.get(myCurrentCard);
+            Uri.Builder builder = new Uri.Builder();
+            Uri uri = builder.scheme("content")
+                    .authority(authority)
+                    .appendPath("cards_table")
+                    .build();
+            card = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "'" + card_id + "' = _id", null, null);
+            if (card != null) {
+                card.moveToFirst();
+                question = card.getString(card.getColumnIndex("question"));
+                answer = card.getString(card.getColumnIndex("answer"));
+                TextView t1 = (TextView) findViewById(R.id.question);
+                TextView t2 = (TextView) findViewById(R.id.answer);
+                t1.setText("");
+                t1.append(question);
+                t2.setText("");
+                t2.append(answer);
+            }
+        }else{
             TextView t1 = (TextView) findViewById(R.id.question);
-            TextView t2 = (TextView) findViewById(R.id.answer);
-            t1.append(question);
-            t2.append(answer);
+            t1.setText("");
+            t1.append("No more work to do");
+            Button response = (Button) findViewById(R.id.give_answer);
+            response.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -205,7 +304,7 @@ public class DisplayCards extends Activity {
                 }
                 easy_cursor.close();
             }
-            if (trivial_cursor.getCount() > 0) {
+            /*if (trivial_cursor.getCount() > 0) {
                 trivial_cursor.moveToFirst();
                 trivial = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + trivial_cursor.getString(trivial_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (trivial != null && trivial.getCount() > 0) {
@@ -222,7 +321,7 @@ public class DisplayCards extends Activity {
                     }
                 }
                 trivial_cursor.close();
-            }
+            }*/
         }catch (NullPointerException npe){
             npe.printStackTrace();
         }
@@ -270,7 +369,7 @@ public class DisplayCards extends Activity {
         easy_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, "strftime('%s','now') - strftime('%s',last_time) >= 13500", null, null);
     }
 
-    public void createCursorTrivial() {
+    /*public void createCursorTrivial() {
         Uri uri;
         Uri.Builder builder = new Uri.Builder();
         uri = builder.scheme("content")
@@ -278,6 +377,5 @@ public class DisplayCards extends Activity {
                 .appendPath(trivial)
                 .build();
         trivial_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, "strftime('%s','now') - strftime('%s',last_time) >= 23500", null, null);
-    }
-
+    }*/
 }

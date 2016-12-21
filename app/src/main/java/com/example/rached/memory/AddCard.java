@@ -2,6 +2,7 @@ package com.example.rached.memory;
 
 import android.app.LoaderManager;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -75,6 +76,16 @@ public class AddCard extends AppCompatActivity
         uri = resolver.insert(uri,values);
         editanswer.clear();
         editquestion.clear();
+
+        long id_card = ContentUris.parseId(uri);
+
+        values = new ContentValues();
+        values.put("card_id", id_card);
+
+        builder = new Uri.Builder();
+        builder.scheme("content").authority(authority).appendPath("just_added_cards_table");
+        uri = builder.build();
+        resolver.insert(uri, values);
     }
 
 

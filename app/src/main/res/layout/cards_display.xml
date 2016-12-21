@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:weightSum="1"
+    android:id="@+id/card_content"
     android:baselineAligned="false">
 
 
@@ -12,10 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/question"
-        android:layout_weight="0.07"
-        android:layout_marginTop="100dp"
+        android:layout_weight="0.26"
+        android:layout_marginTop="50dp"
         android:gravity="center" />
-
 
     <View
         android:layout_height="1px"
@@ -32,15 +32,17 @@
         android:layout_height="wrap_content"
         android:id="@+id/answer"
         android:visibility="invisible"
-        android:layout_weight="0.07"
+        android:layout_weight="0.25"
         android:gravity="center" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="1"
+        android:layout_weight="0.15"
         android:gravity="center|bottom"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:foregroundGravity="bottom"
+        android:layout_gravity="bottom">
 
         <Button
             android:id="@+id/trivial"
@@ -51,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|center"
             android:text="Triviale"
-            android:onClick="trivial" />
+            android:onClick="set_trivial" />
 
         <Button
             android:id="@+id/easy"

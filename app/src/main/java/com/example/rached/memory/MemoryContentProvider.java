@@ -43,11 +43,11 @@ public class MemoryContentProvider extends ContentProvider {
         matcher.addURI(authority, "easy_cards_table", EASY_CARDS);
         matcher.addURI(authority, "medium_cards_table", MEDIUM_CARDS);
         matcher.addURI(authority, "hard_cards_table", HARD_CARDS);
-        matcher.addURI(authority, "trivial/*", ONE_TRIVIAL_CARDS);
-        matcher.addURI(authority, "easy/*", ONE_EASY_CARDS);
-        matcher.addURI(authority, "medium/*", ONE_MEDIUM_CARDS);
-        matcher.addURI(authority, "hard/*", ONE_HARD_CARDS);
-        matcher.addURI(authority, "just_added/*", ONE_JUST_ADDED_CARDS);
+        matcher.addURI(authority, "trivial_cards_table/*", ONE_TRIVIAL_CARDS);
+        matcher.addURI(authority, "easy_cards_table/*", ONE_EASY_CARDS);
+        matcher.addURI(authority, "medium_cards_table/*", ONE_MEDIUM_CARDS);
+        matcher.addURI(authority, "hard_cards_table/*", ONE_HARD_CARDS);
+        matcher.addURI(authority, "just_added_cards_table/*", ONE_JUST_ADDED_CARDS);
     }
 
 
@@ -55,23 +55,52 @@ public class MemoryContentProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(Uri uri, String where, String[] whereArgs) {
         SQLiteDatabase db = helper.getWritableDatabase();
         int code = matcher.match(uri);
+        System.out.println(uri.getPath());
         int i;
-        long id;
         switch (code) {
+            case CARDS:
+                i=db.delete("cards_table", where, whereArgs);
+                break;
             case ONE_CARD:
-                id = ContentUris.parseId(uri);
-                i=db.delete("cards_table", "_id=" + id, null);
+                i=db.delete("cards_table", where, whereArgs);
+                break;
+            case HARD_CARDS:
+                i=db.delete("hard_cards_table", where, whereArgs);
                 break;
             case ONE_HARD_CARDS:
-                id = ContentUris.parseId(uri);
-                i=db.delete("hard_cards_table", "_id=" + id, null);
+                i=db.delete("hard_cards_table", where, whereArgs);
+                break;
+            case EASY_CARDS:
+                i=db.delete("easy_cards_table", where, whereArgs);
+                break;
+            case ONE_EASY_CARDS:
+                i=db.delete("easy_cards_table", where, whereArgs);
+                break;
+            case MEDIUM_CARDS:
+                i=db.delete("medium_cards_table", where, whereArgs);
+                break;
+            case ONE_MEDIUM_CARDS:
+                i=db.delete("medium_cards_table", where, whereArgs);
+                break;
+            case TRIVIAL_CARDS:
+                i=db.delete("trivial_cards_table", where, whereArgs);
+                break;
+            case ONE_TRIVIAL_CARDS:
+                i=db.delete("trivial_cards_table", where, whereArgs);
+                break;
+            case JUST_ADDED_CARDS:
+                i=db.delete("just_added_cards_table", where, whereArgs);
+                break;
+            case ONE_JUST_ADDED_CARDS:
+                i=db.delete("just_added_cards_table", where, whereArgs);
                 break;
             default:
-                throw new UnsupportedOperationException("Not yet implemented");
+                throw new UnsupportedOperationException("Not yet implemented "+ code);
         }
+        getContext().getContentResolver().notifyChange(uri, null);
         return i;
     }
 
