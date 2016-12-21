@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -23,8 +21,7 @@ public class DisplayCards extends Activity {
     private String hard,medium,easy,trivial;
     private String column_question,column_answer;
     private  Cursor hard_cursor,medium_cursor,easy_cursor,trivial_cursor,just_added_cursor;
-    List<String> cards_id = new ArrayList<String>();
-    Cursor card;
+    List<String> cards_id = new ArrayList<>(),questions = new ArrayList<>(),answers = new ArrayList<String>();
     String card_id,question,answer;
 
     @Override
@@ -50,8 +47,7 @@ public class DisplayCards extends Activity {
 
         System.out.println("Diplay : "+cards_id.size());
 
-        while(cards_id.size() > 0)
-            play();
+        play();
     }
 
 
@@ -64,17 +60,8 @@ public class DisplayCards extends Activity {
         Random r = new Random();
         int i = r.nextInt(cards_id.size());
         card_id = cards_id.get(i);
-        Uri uri;
-        ContentResolver resolver = getContentResolver();
-        Uri.Builder builder = new Uri.Builder();
-        uri = builder.scheme("content")
-                .authority(authority)
-                .appendPath("cards_table")
-                .build();
-        card = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "_id = '"+card_id+"'", null, null);
-        card.moveToFirst();
-        question = card.getString(card.getColumnIndex(column_question));
-        answer = card.getString(card.getColumnIndex(column_answer));
+        question = questions.get(i);
+        answer = answers.get(i);
         TextView t1 = (TextView) findViewById(R.id.question);
         TextView t2 = (TextView) findViewById(R.id.answer);
         t1.append(question);
@@ -97,12 +84,16 @@ public class DisplayCards extends Activity {
             if(just.getCount() > 0) {
                 just.moveToFirst();
                 cards_id.add(just.getString(just.getColumnIndex("_id")));
+                questions.add(just.getString(just.getColumnIndex(column_question)));
+                answers.add(just.getString(just.getColumnIndex(column_answer)));
             }
             while (just_added_cursor.moveToNext()) {
                 just = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='"+intent.getLongExtra("key",1L)+"' and '"+just_added_cursor.getString(just_added_cursor.getColumnIndex("card_id"))+"' = _id", null, null);
                 if(just.getCount() > 0) {
                     just.moveToFirst();
                     cards_id.add(just.getString(just.getColumnIndex("_id")));
+                    questions.add(just.getString(just.getColumnIndex(column_question)));
+                    answers.add(just.getString(just.getColumnIndex(column_answer)));
                 }
             }
         }if(hard_cursor.getCount() > 0) {
@@ -111,12 +102,16 @@ public class DisplayCards extends Activity {
             if(hard.getCount() > 0) {
                 hard.moveToFirst();
                 cards_id.add(hard.getString(hard.getColumnIndex("_id")));
+                questions.add(hard.getString(hard.getColumnIndex(column_question)));
+                answers.add(hard.getString(hard.getColumnIndex(column_answer)));
             }
             while (hard_cursor.moveToNext()) {
                 hard = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='"+intent.getLongExtra("key",1L)+"' and '"+hard_cursor.getString(hard_cursor.getColumnIndex("card_id"))+"' = _id", null, null);
                 if(hard.getCount() > 0) {
                     hard.moveToFirst();
                     cards_id.add(hard.getString(hard.getColumnIndex("_id")));
+                    questions.add(hard.getString(hard.getColumnIndex(column_question)));
+                    answers.add(hard.getString(hard.getColumnIndex(column_answer)));
                 }
             }
         }if(medium_cursor.getCount() > 0) {
@@ -125,12 +120,16 @@ public class DisplayCards extends Activity {
             if(medium.getCount() > 0) {
                 medium.moveToFirst();
                 cards_id.add(medium.getString(medium.getColumnIndex("_id")));
+                questions.add(medium.getString(medium.getColumnIndex(column_question)));
+                answers.add(medium.getString(medium.getColumnIndex(column_answer)));
             }
             while (medium_cursor.moveToNext()) {
                 medium = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='"+intent.getLongExtra("key",1L)+"' and '"+medium_cursor.getString(medium_cursor.getColumnIndex("card_id"))+"' = _id", null, null);
                 if(medium.getCount() > 0) {
                     medium.moveToFirst();
                     cards_id.add(medium.getString(medium.getColumnIndex("_id")));
+                    questions.add(medium.getString(medium.getColumnIndex(column_question)));
+                    answers.add(medium.getString(medium.getColumnIndex(column_answer)));
                 }
             }
         }if(easy_cursor.getCount() > 0) {
@@ -139,12 +138,16 @@ public class DisplayCards extends Activity {
             if(easy.getCount() > 0) {
                 easy.moveToFirst();
                 cards_id.add(easy.getString(easy.getColumnIndex("_id")));
+                questions.add(easy.getString(easy.getColumnIndex(column_question)));
+                answers.add(easy.getString(easy.getColumnIndex(column_answer)));
             }
             while (easy_cursor.moveToNext()) {
                 easy = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='"+intent.getLongExtra("key",1L)+"' and '"+easy_cursor.getString(easy_cursor.getColumnIndex("card_id"))+"' = _id", null, null);
                 if(easy.getCount() > 0) {
                     easy.moveToFirst();
                     cards_id.add(easy.getString(easy.getColumnIndex("_id")));
+                    questions.add(easy.getString(easy.getColumnIndex(column_question)));
+                    answers.add(easy.getString(easy.getColumnIndex(column_answer)));
                 }
             }
         }if(trivial_cursor.getCount() > 0) {
@@ -153,12 +156,16 @@ public class DisplayCards extends Activity {
             if(trivial.getCount() > 0) {
                 trivial.moveToFirst();
                 cards_id.add(trivial.getString(trivial.getColumnIndex("_id")));
+                questions.add(trivial.getString(trivial.getColumnIndex(column_question)));
+                answers.add(trivial.getString(trivial.getColumnIndex(column_answer)));
             }
             while (trivial_cursor.moveToNext()) {
                 trivial = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='"+intent.getLongExtra("key",1L)+"' and '"+trivial_cursor.getString(trivial_cursor.getColumnIndex("card_id"))+"' = _id", null, null);
                 if(trivial.getCount() > 0) {
                     trivial.moveToFirst();
                     cards_id.add(trivial.getString(trivial.getColumnIndex("_id")));
+                    questions.add(trivial.getString(trivial.getColumnIndex(column_question)));
+                    answers.add(trivial.getString(trivial.getColumnIndex(column_answer)));
                 }
             }
         }
