@@ -51,9 +51,9 @@ public class DisplayCards extends Activity {
     }
 
 
-    public void answer(){
+    public void answer(View v){
         TextView t2 = (TextView) findViewById(R.id.answer);
-        t2.setVisibility(View.VISIBLE);
+        t2.setVisibility(v.VISIBLE);
     }
 
     public void play() throws NullPointerException{

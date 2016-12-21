@@ -30,7 +30,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/answer"
         android:visibility="invisible"
-        android:layout_weight="0.07" />
+        android:layout_weight="0.07"
+        android:gravity="center" />
 
     <LinearLayout
         android:layout_width="match_parent"
