@@ -6,14 +6,19 @@
     android:orientation="vertical">
 
     <ScrollView android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            xmlns:android="http://schemas.android.com/apk/res/android">
+            android:orientation="vertical"
+            android:weightSum="1">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:baselineAligned="false"
-                android:layout_marginBottom="10sp">
+                android:baselineAligned="false">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -44,71 +49,71 @@
                     android:textStyle="bold|italic"
                     android:layout_weight="63.67" />
             </LinearLayout>
-        </ScrollView>
 
-    <LinearLayout
-        android:id="@+id/difficulty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center|bottom"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+            <LinearLayout
+                android:id="@+id/difficulty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center|bottom"
+                android:orientation="horizontal"
+                android:foregroundGravity="bottom"
+                android:layout_gravity="bottom"
+                android:layout_weight="2">
 
-        <Button
-            android:id="@+id/trivial"
-            android:visibility="invisible"
-            android:textColor="@color/colorPrimary"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center"
-            android:text="Triviale"
-            android:onClick="set_trivial" />
+                <Button
+                    android:id="@+id/trivial"
+                    android:visibility="invisible"
+                    android:textColor="@color/colorPrimary"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center"
+                    android:text="Triviale"
+                    android:onClick="trivial" />
 
-        <Button
-            android:id="@+id/easy"
-            android:visibility="invisible"
-            android:textColor="@color/colorPrimary"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center"
-            android:text="Easy"
-            android:onClick="easy" />
+                <Button
+                    android:id="@+id/easy"
+                    android:visibility="invisible"
+                    android:textColor="@color/colorPrimary"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center"
+                    android:text="Easy"
+                    android:onClick="easy" />
 
-        <Button
-            android:id="@+id/give_answer"
-            android:textColor="@color/colorPrimary"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center_horizontal|center"
-            android:text="Answer"
-            android:onClick="answer" />
+                <Button
+                    android:id="@+id/give_answer"
+                    android:textColor="@color/colorPrimary"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_horizontal|center"
+                    android:text="Answer"
+                    android:onClick="answer" />
+                <Button
+                    android:id="@+id/medium"
+                    android:visibility="invisible"
+                    android:textColor="@color/colorPrimary"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center"
+                    android:text="Medium"
+                    android:onClick="medium" />
 
-        <Button
-            android:id="@+id/medium"
-            android:visibility="invisible"
-            android:textColor="@color/colorPrimary"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center"
-            android:text="Medium"
-            android:onClick="medium" />
+                <Button
+                    android:id="@+id/hard"
+                    android:visibility="invisible"
+                    android:textColor="@color/colorPrimary"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center"
+                    android:text="Hard"
+                    android:onClick="hard" />
 
-        <Button
-            android:id="@+id/hard"
-            android:visibility="invisible"
-            android:textColor="@color/colorPrimary"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center"
-            android:text="Hard"
-            android:onClick="hard" />
-
-    </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 </RelativeLayout>

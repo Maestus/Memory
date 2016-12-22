@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:auto="http://schemas.android.com/apk/res-auto">
+    <item
+        android:orderInCategory="100"
+        android:id="@+id/hard"
+        auto:showAsAction="always"
+        android:title="HARD"
+        android:visible="false" />
+    <item
+        android:orderInCategory="100"
+        android:id="@+id/medium"
+        auto:showAsAction="always"
+        android:title="MEDIUM"
+        android:visible="false" />
+    <item
+        android:orderInCategory="100"
+        android:id="@+id/easy"
+        auto:showAsAction="always"
+        android:title="EASY"
+        android:visible="false" />
+    <item
+        android:orderInCategory="100"
+        android:id="@+id/trivial"
+        auto:showAsAction="always"
+        android:title="TRIVIAL"
+        android:visible="false" />
+</menu>

@@ -7,9 +7,17 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -138,7 +146,7 @@ public class DisplayCards extends AppCompatActivity {
         TextView t2 = (TextView) findViewById(R.id.answer);
         t2.setVisibility(View.INVISIBLE);
         Button response = (Button) findViewById(R.id.give_answer);
-        response.setEnabled(true);
+        response.setVisibility(View.VISIBLE);
 
         Button trivial = (Button) findViewById(R.id.trivial);
         trivial.setVisibility(View.INVISIBLE);
@@ -153,8 +161,7 @@ public class DisplayCards extends AppCompatActivity {
         hard.setVisibility(View.INVISIBLE);
     }
 
-    public void set_trivial(View v){
-        System.out.println("TRIVIALE");
+    public void trivial(View v){
         card.moveToFirst();
         Uri.Builder builder = new Uri.Builder();
         Uri uri = builder.scheme("content")
@@ -179,7 +186,6 @@ public class DisplayCards extends AppCompatActivity {
     }
 
     public void easy(View v){
-        System.out.println("TRIVIALE");
         card.moveToFirst();
         Uri.Builder builder = new Uri.Builder();
         Uri uri = builder.scheme("content")
@@ -204,7 +210,6 @@ public class DisplayCards extends AppCompatActivity {
     }
 
     public void medium(View v){
-        System.out.println("TRIVIALE");
         card.moveToFirst();
         Uri.Builder builder = new Uri.Builder();
         Uri uri = builder.scheme("content")
@@ -229,7 +234,6 @@ public class DisplayCards extends AppCompatActivity {
     }
 
     public void hard(View v){
-        System.out.println("HARD");
         card.moveToFirst();
         Uri.Builder builder = new Uri.Builder();
         Uri uri = builder.scheme("content")
@@ -253,7 +257,6 @@ public class DisplayCards extends AppCompatActivity {
         play();
     }
 
-
     public void answer(View v){
         pressed_give_answer = true;
         answer_display();
@@ -265,7 +268,7 @@ public class DisplayCards extends AppCompatActivity {
         TextView t2 = (TextView) findViewById(R.id.answer);
         t2.setVisibility(View.VISIBLE);
         Button response = (Button) findViewById(R.id.give_answer);
-        response.setEnabled(false);
+        response.setVisibility(View.INVISIBLE);
 
         Button trivial = (Button) findViewById(R.id.trivial);
         trivial.setVisibility(View.VISIBLE);
