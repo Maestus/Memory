@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,9 +27,12 @@ import android.widget.Toast;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 
@@ -38,14 +44,16 @@ public class DisplayCards extends AppCompatActivity {
     private String hard,medium,easy,trivial,just_added;
     private String column_question,column_answer;
     private String re_ask_hard, re_ask_medium, re_ask_easy, re_ask_trivial;
+    private String hard_timer, medium_timer, easy_timer, trivial_timer;
     private  Cursor card,hard_cursor,medium_cursor,easy_cursor, trivial_cursor, just_added_cursor;
-    List<String> cards_id = new ArrayList<>();
+    List<Map.Entry<String,Integer>> cards_id = new ArrayList<>();
     String card_id,question,answer;
     static final String STATE_LEVEL = "Card_id";
     static final String STATE_ANSWER = "pressed_give_answer";
     static final String STATE_PASS = "pressed_choice";
     int myCurrentCard;
     boolean pressed_choice = false, pressed_give_answer = false, choosed_card = false;
+    Chronometer myChronometer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,10 +67,13 @@ public class DisplayCards extends AppCompatActivity {
         re_ask_hard = prefs.getString("hardsleeptime","24");
         re_ask_trivial = prefs.getString("trivialsleeptime","Never");
 
-        System.out.println("+++++++++++++++++++++++ "+re_ask_hard+" +++++++++++++++++++++++");
-        System.out.println("+++++++++++++++++++++++ "+re_ask_medium+" +++++++++++++++++++++++");
-        System.out.println("+++++++++++++++++++++++ "+re_ask_easy+" +++++++++++++++++++++++");
-        System.out.println("+++++++++++++++++++++++ "+re_ask_trivial+" +++++++++++++++++++++++");
+        easy_timer = prefs.getString("easysleeptime","2");
+        medium_timer = prefs.getString("mediumsleeptime","3");
+        hard_timer = prefs.getString("hardsleeptime","5");
+        trivial_timer = prefs.getString("trivialsleeptime","1");
+
+
+        myChronometer = (Chronometer) findViewById(R.id.chronometer1);
 
 
         hard = "hard_cards_table";
@@ -95,11 +106,31 @@ public class DisplayCards extends AppCompatActivity {
             myCurrentCard = savedInstanceState.getInt(STATE_LEVEL);
             pressed_give_answer = savedInstanceState.getBoolean(STATE_ANSWER);
             choosed_card = true;
-            //pressed_choice = savedInstanceState.getBoolean(STATE_PASS);
             if(pressed_give_answer){
                 answer_display();
             }
         }
+
+        myChronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+                if(cards_id.get(myCurrentCard).getValue() / 10 < 1 ) {
+                    if (chronometer.getText().toString().equalsIgnoreCase("00:0" + cards_id.get(myCurrentCard).getValue())) {
+                        chronometer.stop();
+                        chronometer.setBackgroundColor(Color.RED);
+                        answer_display();
+                    }
+                }else if(cards_id.get(myCurrentCard).getValue() / 10 >= 1 ) {
+                    if (chronometer.getText().toString().equalsIgnoreCase("00:" + cards_id.get(myCurrentCard).getValue())) {
+                        chronometer.stop();
+                        chronometer.setBackgroundColor(Color.RED);
+                        answer_display();
+                    }
+                }
+            }
+        });
+
         play();
     }
 
@@ -109,7 +140,7 @@ public class DisplayCards extends AppCompatActivity {
                 Random r = new Random();
                 myCurrentCard = r.nextInt(cards_id.size());
             }
-            card_id = cards_id.get(myCurrentCard);
+            card_id = cards_id.get(myCurrentCard).getKey();
             Uri.Builder builder = new Uri.Builder();
             Uri uri = builder.scheme("content")
                     .authority(authority)
@@ -126,6 +157,12 @@ public class DisplayCards extends AppCompatActivity {
                 t1.append(question);
                 t2.setText("");
                 t2.append(answer);
+                if (cards_id.get(myCurrentCard).getValue() == 0) {
+                    myChronometer.setVisibility(View.INVISIBLE);
+                } else {
+                    myChronometer.setVisibility(View.VISIBLE);
+                    myChronometer.start();
+                }
             }
         }else{
             TextView t1 = (TextView) findViewById(R.id.question);
@@ -133,6 +170,7 @@ public class DisplayCards extends AppCompatActivity {
             t1.append("No more work to do");
             Button response = (Button) findViewById(R.id.give_answer);
             response.setVisibility(View.INVISIBLE);
+            myChronometer.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -165,6 +203,7 @@ public class DisplayCards extends AppCompatActivity {
     }
 
     public void setInvisibleAnswerAndButtons(){
+        myChronometer.setBase(SystemClock.elapsedRealtime());
         View separator = findViewById(R.id.separator);
         separator.setVisibility(View.INVISIBLE);
         TextView t2 = (TextView) findViewById(R.id.answer);
@@ -211,7 +250,7 @@ public class DisplayCards extends AppCompatActivity {
         removeFromOtherCollections(trivial);
         setInvisibleAnswerAndButtons();
         card.close();
-        cards_id.remove(card_id);
+        cards_id.remove(myCurrentCard);
         choosed_card = false;
         pressed_give_answer = false;
         play();
@@ -243,7 +282,7 @@ public class DisplayCards extends AppCompatActivity {
         removeFromOtherCollections(easy);
         setInvisibleAnswerAndButtons();
         card.close();
-        cards_id.remove(card_id);
+        cards_id.remove(myCurrentCard);
         choosed_card = false;
         pressed_give_answer = false;
         play();
@@ -275,7 +314,7 @@ public class DisplayCards extends AppCompatActivity {
         removeFromOtherCollections(medium);
         setInvisibleAnswerAndButtons();
         card.close();
-        cards_id.remove(card_id);
+        cards_id.remove(myCurrentCard);
         choosed_card = false;
         pressed_give_answer = false;
         play();
@@ -306,7 +345,7 @@ public class DisplayCards extends AppCompatActivity {
         removeFromOtherCollections(hard);
         setInvisibleAnswerAndButtons();
         card.close();
-        cards_id.remove(card_id);
+        cards_id.remove(myCurrentCard);
         choosed_card = false;
         pressed_give_answer = false;
         play();
@@ -353,14 +392,14 @@ public class DisplayCards extends AppCompatActivity {
                 just = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + just_added_cursor.getString(just_added_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (just != null && just.getCount() > 0) {
                     just.moveToFirst();
-                    cards_id.add(just.getString(just.getColumnIndex("_id")));
+                    cards_id.add(new AbstractMap.SimpleEntry<>(just.getString(just.getColumnIndex("_id")),0));
                     just.close();
                 }
                 while (just_added_cursor.moveToNext()) {
                     just = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + just_added_cursor.getString(just_added_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                     if (just != null && just.getCount() > 0) {
                         just.moveToFirst();
-                        cards_id.add(just.getString(just.getColumnIndex("_id")));
+                        cards_id.add(new AbstractMap.SimpleEntry<>(just.getString(just.getColumnIndex("_id")),0));
                         just.close();
                     }
                 }
@@ -371,14 +410,14 @@ public class DisplayCards extends AppCompatActivity {
                 hard = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + hard_cursor.getString(hard_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (hard != null && hard.getCount() > 0) {
                     hard.moveToFirst();
-                    cards_id.add(hard.getString(hard.getColumnIndex("_id")));
+                    cards_id.add(new AbstractMap.SimpleEntry<>(hard.getString(hard.getColumnIndex("_id")),Integer.parseInt(hard_timer)));
                     hard.close();
                 }
                 while (hard_cursor.moveToNext()) {
                     hard = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + hard_cursor.getString(hard_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                     if (hard != null && hard.getCount() > 0) {
                         hard.moveToFirst();
-                        cards_id.add(hard.getString(hard.getColumnIndex("_id")));
+                        cards_id.add(new AbstractMap.SimpleEntry<>(hard.getString(hard.getColumnIndex("_id")),Integer.parseInt(hard_timer)));
                         hard.close();
                     }
                 }
@@ -389,14 +428,14 @@ public class DisplayCards extends AppCompatActivity {
                 medium = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + medium_cursor.getString(medium_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (medium != null && medium.getCount() > 0) {
                     medium.moveToFirst();
-                    cards_id.add(medium.getString(medium.getColumnIndex("_id")));
+                    cards_id.add(new AbstractMap.SimpleEntry<>(medium.getString(medium.getColumnIndex("_id")),Integer.parseInt(medium_timer)));
                     medium.close();
                 }
                 while (medium_cursor.moveToNext()) {
                     medium = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + medium_cursor.getString(medium_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                     if (medium != null && medium.getCount() > 0) {
                         medium.moveToFirst();
-                        cards_id.add(medium.getString(medium.getColumnIndex("_id")));
+                        cards_id.add(new AbstractMap.SimpleEntry<>(medium.getString(medium.getColumnIndex("_id")),Integer.parseInt(medium_timer)));
                         medium.close();
                     }
                 }
@@ -407,14 +446,14 @@ public class DisplayCards extends AppCompatActivity {
                 easy = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + easy_cursor.getString(easy_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (easy != null && easy.getCount() > 0) {
                     easy.moveToFirst();
-                    cards_id.add(easy.getString(easy.getColumnIndex("_id")));
+                    cards_id.add(new AbstractMap.SimpleEntry<>(easy.getString(easy.getColumnIndex("_id")),Integer.parseInt(easy_timer)));
                     easy.close();
                 }
                 while (easy_cursor.moveToNext()) {
                     easy = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + easy_cursor.getString(easy_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                     if (easy != null && easy.getCount() > 0) {
                         easy.moveToFirst();
-                        cards_id.add(easy.getString(easy.getColumnIndex("_id")));
+                        cards_id.add(new AbstractMap.SimpleEntry<>(easy.getString(easy.getColumnIndex("_id")),Integer.parseInt(easy_timer)));
                         easy.close();
                     }
                 }
@@ -425,14 +464,14 @@ public class DisplayCards extends AppCompatActivity {
                 trivial = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + trivial_cursor.getString(trivial_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (trivial != null && trivial.getCount() > 0) {
                     trivial.moveToFirst();
-                    cards_id.add(trivial.getString(trivial.getColumnIndex("_id")));
+                    cards_id.add(new AbstractMap.SimpleEntry<>(trivial.getString(trivial.getColumnIndex("_id")),Integer.parseInt(trivial_timer)));
                     trivial.close();
                 }
                 while (trivial_cursor.moveToNext()) {
                     trivial = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + trivial_cursor.getString(trivial_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                     if (trivial != null && trivial.getCount() > 0) {
                         trivial.moveToFirst();
-                        cards_id.add(trivial.getString(trivial.getColumnIndex("_id")));
+                        cards_id.add(new AbstractMap.SimpleEntry<>(trivial.getString(trivial.getColumnIndex("_id")),Integer.parseInt(trivial_timer)));
                         trivial.close();
                     }
                 }
@@ -449,7 +488,7 @@ public class DisplayCards extends AppCompatActivity {
         Uri.Builder builder = new Uri.Builder();
         uri = builder.scheme("content")
                 .authority(authority)
-                .appendPath("just_added_cards_table")
+                .appendPath(just_added)
                 .build();
         just_added_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, null, null, null);
     }

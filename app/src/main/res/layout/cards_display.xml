@@ -5,15 +5,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <Chronometer
+        android:id="@+id/chronometer1"
+        android:textColor="#4169E1"
+        android:textSize="20sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"/>
+
     <ScrollView android:layout_width="match_parent"
             android:layout_height="match_parent"
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:fillViewport="true">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:weightSum="1">
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,7 +52,7 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:id="@+id/answer"
                     android:visibility="invisible"
                     android:gravity="center"
@@ -53,19 +64,19 @@
             <LinearLayout
                 android:id="@+id/difficulty"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:gravity="center|bottom"
                 android:orientation="horizontal"
                 android:foregroundGravity="bottom"
                 android:layout_gravity="bottom"
-                android:layout_weight="2">
+                android:layout_weight="1.80">
 
                 <Button
                     android:id="@+id/trivial"
                     android:visibility="invisible"
                     android:textColor="@color/colorPrimary"
                     style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
+                    android:layout_width="61dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|center"
                     android:text="Triviale"
@@ -96,7 +107,7 @@
                     android:visibility="invisible"
                     android:textColor="@color/colorPrimary"
                     style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
+                    android:layout_width="64dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|center"
                     android:text="Medium"
