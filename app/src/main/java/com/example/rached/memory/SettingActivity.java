@@ -9,11 +9,10 @@ public class SettingActivity extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new MyPreferenceFragment()).commit();
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingActivity.MyPreferenceFragment()).commit();
     }
 
-    public static class MyPreferenceFragment extends PreferenceFragment
-    {
+    public static class MyPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(final Bundle savedInstanceState)
         {

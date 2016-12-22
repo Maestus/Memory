@@ -1,16 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <EditTextPreference android:title="Your Name"
-        android:key="username"
-        android:summary="Please provide your username"></EditTextPreference>
-    <CheckBoxPreference android:title="Application Updates"
-        android:defaultValue="false"
-        android:summary="This option if selected will allow the application to check for latest versions."
-        android:key="applicationUpdates" />
-    <ListPreference android:title="Download Details"
-        android:summary="Select the kind of data that you would like to download"
-        android:key="downloadType"
-        android:defaultValue="1"
-        android:entries="@array/listArray"
-        android:entryValues="@array/listValues" />
+
+    <PreferenceCategory android:title="Hours before re-ask">
+
+        <EditTextPreference android:title="Hard Difficulty"
+            android:key="hardsleeptime"
+            android:defaultValue="24"/>
+        <EditTextPreference android:title="Medium Difficulty"
+            android:key="mediumleeptime"
+            android:defaultValue="48"/>
+        <EditTextPreference android:title="Easy Difficulty"
+            android:key="easysleeptime"
+            android:defaultValue="72"/>
+        <EditTextPreference android:title="Trivial Difficulty"
+            android:key="trivialsleeptime"
+            android:summary="Never re-ask by default"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Maximum minutes for a question">
+
+        <EditTextPreference android:title="Hard Difficulty"
+            android:key="hard_minutes"
+            android:defaultValue="5"/>
+        <EditTextPreference android:title="Medium Difficulty"
+            android:key="medium_minutes"
+            android:defaultValue="3"/>
+        <EditTextPreference android:title="Easy Difficulty"
+            android:key="easy_minutes"
+            android:defaultValue="2"/>
+        <EditTextPreference android:title="Trivial Difficulty"
+            android:key="trivial_minutes"
+            android:enabled="false"
+            android:summary="Disable if never re-ask"
+            android:defaultValue="1"/>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

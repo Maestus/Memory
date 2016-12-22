@@ -4,9 +4,11 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,7 +37,8 @@ public class DisplayCards extends AppCompatActivity {
     ContentResolver resolver;
     private String hard,medium,easy,trivial,just_added;
     private String column_question,column_answer;
-    private  Cursor card,hard_cursor,medium_cursor,easy_cursor/*,trivial_cursor*/,just_added_cursor;
+    private String re_ask_hard, re_ask_medium, re_ask_easy, re_ask_trivial;
+    private  Cursor card,hard_cursor,medium_cursor,easy_cursor, trivial_cursor, just_added_cursor;
     List<String> cards_id = new ArrayList<>();
     String card_id,question,answer;
     static final String STATE_LEVEL = "Card_id";
@@ -48,6 +51,19 @@ public class DisplayCards extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cards_display);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        re_ask_easy = prefs.getString("easysleeptime","72");
+        re_ask_medium = prefs.getString("mediumsleeptime","48");
+        re_ask_hard = prefs.getString("hardsleeptime","24");
+        re_ask_trivial = prefs.getString("trivialsleeptime","Never");
+
+        System.out.println("+++++++++++++++++++++++ "+re_ask_hard+" +++++++++++++++++++++++");
+        System.out.println("+++++++++++++++++++++++ "+re_ask_medium+" +++++++++++++++++++++++");
+        System.out.println("+++++++++++++++++++++++ "+re_ask_easy+" +++++++++++++++++++++++");
+        System.out.println("+++++++++++++++++++++++ "+re_ask_trivial+" +++++++++++++++++++++++");
+
 
         hard = "hard_cards_table";
         medium = "medium_cards_table";
@@ -65,7 +81,7 @@ public class DisplayCards extends AppCompatActivity {
         createCursorHard();
         createCursorMedium();
         createCursorEasy();
-        //createCursorTrivial(); extension
+        createCursorTrivial();
 
         ListedAllCardsGet();
 
@@ -325,14 +341,14 @@ public class DisplayCards extends AppCompatActivity {
     public void ListedAllCardsGet(){
         Uri uri;
         Intent intent = getIntent();
-        Cursor just,hard,medium,easy;//trivial
+        Cursor just,hard,medium,easy,trivial;
         Uri.Builder builder = new Uri.Builder();
         uri = builder.scheme("content")
                 .authority(authority)
                 .appendPath("cards_table")
                 .build();
         try {
-            if (just_added_cursor.getCount() > 0) {
+            if (just_added_cursor != null && just_added_cursor.getCount() > 0) {
                 just_added_cursor.moveToFirst();
                 just = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + just_added_cursor.getString(just_added_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (just != null && just.getCount() > 0) {
@@ -350,7 +366,7 @@ public class DisplayCards extends AppCompatActivity {
                 }
                 just_added_cursor.close();
             }
-            if (hard_cursor.getCount() > 0) {
+            if (hard_cursor != null && hard_cursor.getCount() > 0) {
                 hard_cursor.moveToFirst();
                 hard = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + hard_cursor.getString(hard_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (hard != null && hard.getCount() > 0) {
@@ -368,7 +384,7 @@ public class DisplayCards extends AppCompatActivity {
                 }
                 hard_cursor.close();
             }
-            if (medium_cursor.getCount() > 0) {
+            if (medium_cursor != null && medium_cursor.getCount() > 0) {
                 medium_cursor.moveToFirst();
                 medium = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + medium_cursor.getString(medium_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (medium != null && medium.getCount() > 0) {
@@ -386,7 +402,7 @@ public class DisplayCards extends AppCompatActivity {
                 }
                 medium_cursor.close();
             }
-            if (easy_cursor.getCount() > 0) {
+            if (easy_cursor != null && easy_cursor.getCount() > 0) {
                 easy_cursor.moveToFirst();
                 easy = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + easy_cursor.getString(easy_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (easy != null && easy.getCount() > 0) {
@@ -404,7 +420,7 @@ public class DisplayCards extends AppCompatActivity {
                 }
                 easy_cursor.close();
             }
-            /*if (trivial_cursor.getCount() > 0) {
+            if (trivial_cursor != null && trivial_cursor.getCount() > 0) {
                 trivial_cursor.moveToFirst();
                 trivial = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + trivial_cursor.getString(trivial_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (trivial != null && trivial.getCount() > 0) {
@@ -421,7 +437,7 @@ public class DisplayCards extends AppCompatActivity {
                     }
                 }
                 trivial_cursor.close();
-            }*/
+            }
         }catch (NullPointerException npe){
             npe.printStackTrace();
         }
@@ -446,7 +462,10 @@ public class DisplayCards extends AppCompatActivity {
                 .authority(authority)
                 .appendPath(hard)
                 .build();
-        hard_cursor = resolver.query(uri, new String[]{"_id", "card_id", "last_time"}, "strftime('%s','now') - strftime('%s',last_time) > 86400", null, null);
+
+        String request = "strftime('%s','now') - strftime('%s',last_time) > " + re_ask_hard;
+
+        hard_cursor = resolver.query(uri, new String[]{"_id", "card_id", "last_time"}, request, null, null);
     }
 
     public void createCursorMedium() {
@@ -456,7 +475,10 @@ public class DisplayCards extends AppCompatActivity {
                 .authority(authority)
                 .appendPath(medium)
                 .build();
-        medium_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, "strftime('%s','now') - strftime('%s',last_time) > 172800", null, null);
+
+        String request = "strftime('%s','now') - strftime('%s',last_time) > " + re_ask_medium;
+
+        medium_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, request, null, null);
     }
 
     public void createCursorEasy() {
@@ -466,16 +488,24 @@ public class DisplayCards extends AppCompatActivity {
                 .authority(authority)
                 .appendPath(easy)
                 .build();
-        easy_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, "strftime('%s','now') - strftime('%s',last_time) > 259200", null, null);
+
+        String request = "strftime('%s','now') - strftime('%s',last_time) > " + re_ask_easy;
+
+        easy_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, request, null, null);
     }
 
-    /*public void createCursorTrivial() {
-        Uri uri;
-        Uri.Builder builder = new Uri.Builder();
-        uri = builder.scheme("content")
-                .authority(authority)
-                .appendPath(trivial)
-                .build();
-        trivial_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, "strftime('%s','now') - strftime('%s',last_time) >= 23500", null, null);
-    }*/
+    public void createCursorTrivial() {
+        if (!re_ask_trivial.equals("Never")) {
+            Uri uri;
+            Uri.Builder builder = new Uri.Builder();
+            uri = builder.scheme("content")
+                    .authority(authority)
+                    .appendPath(trivial)
+                    .build();
+
+            String request = "strftime('%s','now') - strftime('%s',last_time) > " + re_ask_trivial;
+
+            trivial_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, request, null, null);
+        }
+    }
 }
