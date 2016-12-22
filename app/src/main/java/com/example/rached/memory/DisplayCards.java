@@ -2,6 +2,7 @@ package com.example.rached.memory;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -18,16 +19,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.TimeZone;
+
+import static java.text.DateFormat.getDateTimeInstance;
 
 public class DisplayCards extends AppCompatActivity {
     private static String authority = "com.example.rached.memorycontentprovider";
     ContentResolver resolver;
     private String hard,medium,easy,trivial,just_added;
     private String column_question,column_answer;
-    private  Cursor card,hard_cursor,medium_cursor,easy_cursor,trivial_cursor,just_added_cursor;
+    private  Cursor card,hard_cursor,medium_cursor,easy_cursor/*,trivial_cursor*/,just_added_cursor;
     List<String> cards_id = new ArrayList<>();
     String card_id,question,answer;
     static final String STATE_LEVEL = "Card_id";
@@ -171,6 +179,14 @@ public class DisplayCards extends AppCompatActivity {
 
         long id = card.getLong(card.getColumnIndex("_id"));
 
+        Cursor tmp = resolver.query(uri,new String[]{"_id","last_time"},"card_id='"+card_id+"'",null,null);
+
+        if(tmp != null && tmp.getCount() > 0) {
+            String [] arg = new String[]{card_id};
+            resolver.delete(uri,"card_id=?",arg);
+            tmp.close();
+        }
+
         ContentValues values = new ContentValues();
         values.put("card_id", id);
 
@@ -194,6 +210,14 @@ public class DisplayCards extends AppCompatActivity {
                 .build();
 
         long id = card.getLong(card.getColumnIndex("_id"));
+
+        Cursor tmp = resolver.query(uri,new String[]{"_id","last_time"},"card_id='"+card_id+"'",null,null);
+
+        if(tmp != null && tmp.getCount() > 0) {
+            String [] arg = new String[]{card_id};
+            resolver.delete(uri,"card_id=?",arg);
+            tmp.close();
+        }
 
         ContentValues values = new ContentValues();
         values.put("card_id", id);
@@ -219,6 +243,14 @@ public class DisplayCards extends AppCompatActivity {
 
         long id = card.getLong(card.getColumnIndex("_id"));
 
+        Cursor tmp = resolver.query(uri,new String[]{"_id","last_time"},"card_id='"+card_id+"'",null,null);
+
+        if(tmp != null && tmp.getCount() > 0) {
+            String [] arg = new String[]{card_id};
+            resolver.delete(uri,"card_id=?",arg);
+            tmp.close();
+        }
+
         ContentValues values = new ContentValues();
         values.put("card_id", id);
 
@@ -243,6 +275,13 @@ public class DisplayCards extends AppCompatActivity {
 
         long id = card.getLong(card.getColumnIndex("_id"));
 
+        Cursor tmp = resolver.query(uri,new String[]{"_id","last_time"},"card_id='"+card_id+"'",null,null);
+
+        if(tmp != null && tmp.getCount() > 0) {
+            String [] arg = new String[]{card_id};
+            resolver.delete(uri,"card_id=?",arg);
+            tmp.close();
+        }
         ContentValues values = new ContentValues();
         values.put("card_id", id);
 
@@ -286,7 +325,7 @@ public class DisplayCards extends AppCompatActivity {
     public void ListedAllCardsGet(){
         Uri uri;
         Intent intent = getIntent();
-        Cursor just,hard,medium,easy,trivial;
+        Cursor just,hard,medium,easy;//trivial
         Uri.Builder builder = new Uri.Builder();
         uri = builder.scheme("content")
                 .authority(authority)
@@ -407,7 +446,7 @@ public class DisplayCards extends AppCompatActivity {
                 .authority(authority)
                 .appendPath(hard)
                 .build();
-        hard_cursor = resolver.query(uri, new String[]{"_id", "card_id", "last_time"}, "strftime('%s','now') - strftime('%s',last_time) >= 1000", null, null);
+        hard_cursor = resolver.query(uri, new String[]{"_id", "card_id", "last_time"}, "strftime('%s','now') - strftime('%s',last_time) > 86400", null, null);
     }
 
     public void createCursorMedium() {
@@ -417,7 +456,7 @@ public class DisplayCards extends AppCompatActivity {
                 .authority(authority)
                 .appendPath(medium)
                 .build();
-        medium_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, "strftime('%s','now') - strftime('%s',last_time) >= 10500", null, null);
+        medium_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, "strftime('%s','now') - strftime('%s',last_time) > 172800", null, null);
     }
 
     public void createCursorEasy() {
@@ -427,7 +466,7 @@ public class DisplayCards extends AppCompatActivity {
                 .authority(authority)
                 .appendPath(easy)
                 .build();
-        easy_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, "strftime('%s','now') - strftime('%s',last_time) >= 13500", null, null);
+        easy_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, "strftime('%s','now') - strftime('%s',last_time) > 259200", null, null);
     }
 
     /*public void createCursorTrivial() {

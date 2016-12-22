@@ -229,9 +229,51 @@ public class MemoryContentProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection,
-                      String[] selectionArgs) {
-        // TODO: Implement this to handle requests to update one or more rows.
-        throw new UnsupportedOperationException("Not yet implemented");
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        int code = matcher.match(uri);
+        int i;
+        switch (code) {
+            case CARDS:
+                i=db.update("cards_table", values, selection, selectionArgs);
+                break;
+            case ONE_CARD:
+                i=db.update("cards_table", values, selection, selectionArgs);
+                break;
+            case HARD_CARDS:
+                i=db.update("hard_cards_table", values, selection, selectionArgs);
+                break;
+            case ONE_HARD_CARDS:
+                i=db.update("hard_cards_table", values, selection, selectionArgs);
+                break;
+            case EASY_CARDS:
+                i=db.update("easy_cards_table", values, selection, selectionArgs);
+                break;
+            case ONE_EASY_CARDS:
+                i=db.update("easy_cards_table", values, selection, selectionArgs);
+                break;
+            case MEDIUM_CARDS:
+                i=db.update("medium_cards_table", values, selection, selectionArgs);
+                break;
+            case ONE_MEDIUM_CARDS:
+                i=db.update("medium_cards_table", values, selection, selectionArgs);
+                break;
+            case TRIVIAL_CARDS:
+                i=db.update("trivial_cards_table", values, selection, selectionArgs);
+                break;
+            case ONE_TRIVIAL_CARDS:
+                i=db.update("trivial_cards_table", values, selection, selectionArgs);
+                break;
+            case JUST_ADDED_CARDS:
+                i=db.update("just_added_cards_table", values, selection, selectionArgs);
+                break;
+            case ONE_JUST_ADDED_CARDS:
+                i=db.update("just_added_cards_table", values, selection, selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Not yet implemented "+ code);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return i;
     }
 }
