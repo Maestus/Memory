@@ -27,7 +27,7 @@ public class AddCard extends AppCompatActivity
     private static String authority = "com.example.rached.memorycontentprovider";
     Spinner spinner;
     SimpleCursorAdapter adapter;
-    EditText question,answer;
+    EditText question,answer,collection;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +46,29 @@ public class AddCard extends AppCompatActivity
         question = (EditText)findViewById(R.id.question);
         answer = (EditText)findViewById(R.id.answer);
 
+        collection = (EditText)findViewById(R.id.collection);
+
+    }
+
+    public void ajouterCollection(View view){
+        Editable editcollec = collection.getText();
+        String collection = editcollec.toString();
+        if(collection.contentEquals("")){
+            Toast.makeText(this,"Answer empty",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ContentResolver resolver = getContentResolver();
+
+        ContentValues values = new ContentValues();
+        values.put("name",collection);
+        values.put("name2",collection);
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("content").authority(authority).appendPath("collections_table");
+        Uri uri = builder.build();
+        uri = resolver.insert(uri,values);
+        editcollec.clear();
     }
 
     public void ajouter(View view){

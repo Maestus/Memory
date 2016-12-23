@@ -2,6 +2,7 @@ package com.example.rached.memory;
 
 import android.content.ClipData;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -68,7 +69,6 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
         mAuthority = getArguments().getString(AUTHORITY);
         mTable = getArguments().getString(TABLE);
         mColumn = getArguments().getString(COLUMN);
-
 
         adapter = new SimpleCursorAdapter(
                 getActivity(),/*context*/
@@ -201,6 +201,7 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
         if(mListener == null){
             Log.d(LOG,"onListItemClick mListener=null");
         }
+
         mListener.onIdSelection(id);
     }
 

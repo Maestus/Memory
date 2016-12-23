@@ -27,7 +27,6 @@
         <activity android:name=".DisplayCards" />
         <activity android:name=".AddCard" />
         <activity android:name=".SettingActivity" />
-
     </application>
 
 </manifest>

@@ -9,12 +9,13 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 
 public class MainDB extends SQLiteOpenHelper {
-    private static int VERSION = 3;
+    private static int VERSION = 10;
     private static MainDB instance;
     private static String MemoryDB = "MemoryDB";
     private String collections_table = "create table collections_table( " +
             " name varchar(30) not null," +
-            " _id integer primary key "       +
+            " time datetime DEFAULT CURRENT_TIMESTAMP," +
+            " _id integer primary key "  +
             ");";
     private String cards_table = "create table cards_table (" +
             " question varchar(100) not null,"                   +

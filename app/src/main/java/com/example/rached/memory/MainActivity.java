@@ -1,12 +1,24 @@
 package com.example.rached.memory;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -14,12 +26,16 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity
@@ -31,6 +47,7 @@ public class MainActivity extends AppCompatActivity
     private static final String LOG = "CollectionsBD";
     private static final String SAVE_ID = "saveId";
     final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL = 101;
+    String collection_max_open;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +65,12 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        collection_max_open = prefs.getString("collections_max_sleep","10");
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL);
@@ -61,6 +84,8 @@ public class MainActivity extends AppCompatActivity
                             .penaltyDeath()
                             .build());
                     getFragmentManager().beginTransaction().add(R.id.content_main, new DownloadActivity()).commit();
+                }else{
+                    notifyContentToSee();
                 }
             }
         }
@@ -108,9 +133,48 @@ public class MainActivity extends AppCompatActivity
 
                         getFragmentManager().beginTransaction().add(R.id.content_main, new DownloadActivity()).commit();
                     } else {
-                        // permission denied!
+                        notifyContentToSee();
                     }
                 }
+        }
+    }
+
+
+    public void notifyContentToSee(){
+        ContentResolver resolver = getContentResolver();
+        Uri.Builder builder = new Uri.Builder();
+        Uri uri = builder.scheme("content")
+                .authority("com.example.rached.memorycontentprovider")
+                .appendPath("collections_table")
+                .build();
+        String ask = (System.currentTimeMillis()/1000)+ " - time > " + collection_max_open;
+        Cursor collections = resolver.query(uri,new String[]{"_id","name","time"},ask,null,null);//"strftime('%s','now') - strftime('%s',time) >?",arg,null);
+        System.out.println(collections.getCount());
+        if(collections != null && collections.getCount() > 0){
+            collections.moveToFirst();
+            System.out.println(collections.getString(collections.getColumnIndex("time")));
+            Notification notification = new NotificationCompat.Builder(this)
+                    .setContentTitle("Memory")
+                    .setContentText("La collection "+ collections.getString(collections.getColumnIndex("name")) +" commence à prendre la poussière")
+                    .setSmallIcon(R.drawable.small)
+                    .setAutoCancel(true)
+                    .build();
+            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
+                    .notify(Integer.parseInt(collections.getString(collections.getColumnIndex("_id"))), notification);
+            while (collections.moveToNext()){
+                if(collections != null) {
+                    System.out.println(collections.getString(collections.getColumnIndex("time")));
+                    notification = new NotificationCompat.Builder(this)
+                            .setContentTitle("Memory")
+                            .setContentText("La collection " + collections.getString(collections.getColumnIndex("name")) + " commence à prendre la poussière")
+                            .setSmallIcon(R.drawable.small)
+                            .setAutoCancel(true)
+                            .build();
+                    ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
+                            .notify(Integer.parseInt(collections.getString(collections.getColumnIndex("_id"))), notification);
+                }
+            }
+            collections.close();
         }
     }
 
@@ -166,6 +230,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onIdSelection(long id) {
+        ContentResolver resolver = getContentResolver();
+        Uri.Builder builder = new Uri.Builder();
+        Uri uri = builder.scheme("content")
+                .authority("com.example.rached.memorycontentprovider")
+                .appendPath("collections_table")
+                .build();
+
+        ContentValues values = new ContentValues();
+        values.put("time", System.currentTimeMillis()/1000);
+
+        String [] arg = new String[]{""+id};
+        resolver.update(uri,values,"_id=?",arg);
+
         Intent intent = new Intent(this, DisplayCards.class);
         Bundle b = new Bundle();
         b.putLong("key", id); //Your id

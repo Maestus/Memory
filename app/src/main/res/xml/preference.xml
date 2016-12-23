@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <EditTextPreference android:title="Notification of old collections"
+        android:key="collections_max_sleep"
+        android:defaultValue="10"/>
+
     <PreferenceCategory android:title="Hours before re-ask">
 
         <EditTextPreference android:title="Hard Difficulty"
             android:key="hardsleeptime"
             android:defaultValue="24"/>
         <EditTextPreference android:title="Medium Difficulty"
-            android:key="mediumleeptime"
+            android:key="mediumsleeptime"
             android:defaultValue="48"/>
         <EditTextPreference android:title="Easy Difficulty"
             android:key="easysleeptime"

@@ -28,6 +28,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import static java.lang.System.exit;
 
@@ -99,6 +102,7 @@ public class ParseXML extends Fragment{
         String n = c.name;
         ContentValues values = new ContentValues();
         values.put("name", n);
+        values.put("time", System.currentTimeMillis()/1000);
 
         ContentResolver resolver = getActivity().getContentResolver();
         Uri.Builder builder = new Uri.Builder();

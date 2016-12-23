@@ -172,30 +172,8 @@ public class MemoryContentProvider extends ContentProvider {
         Cursor cursor;
         switch (code) {
             case COLLECTIONS:
-                cursor = db.query("collections_table", new String[]{"rowid","_id","name"}, selection,
+                cursor = db.query("collections_table", projection, selection,
                         selectionArgs, null, null, sortOrder);
-                /*
-                cursor.moveToFirst();
-                while(cursor.moveToNext()){
-                    int i= cursor.getInt(0);
-                    int j= cursor.getInt(1);
-                    String s=cursor.getString(2);
-                    Log.d("pepe1=",i+"");
-                    Log.d("pepe2=",j+"");
-                    Log.d("pepe3",s);
-                }
-*/
-                //cursor = db.query("collections_table", projection, selection,selectionArgs, null, null, sortOrder);
-                /*
-                cursor.moveToFirst();
-                while(cursor.moveToNext()){
-                    int i= cursor.getInt(0);
-                    String s=cursor.getString(1);
-                    Log.d("pepe1=",i+"");
-                    Log.d("pepe2",s);
-                }
-*/
-
                 break;
             case CARDS:
                 cursor = db.query("cards_table", projection, selection,
@@ -234,6 +212,9 @@ public class MemoryContentProvider extends ContentProvider {
         int code = matcher.match(uri);
         int i;
         switch (code) {
+            case COLLECTIONS:
+                i=db.update("collections_table", values, selection, selectionArgs);
+                break;
             case CARDS:
                 i=db.update("cards_table", values, selection, selectionArgs);
                 break;

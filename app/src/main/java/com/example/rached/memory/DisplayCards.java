@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
@@ -52,6 +53,7 @@ public class DisplayCards extends AppCompatActivity {
     static final String STATE_ANSWER = "pressed_give_answer";
     static final String STATE_PASS = "pressed_choice";
     int myCurrentCard;
+    boolean on_going = false;
     boolean pressed_choice = false, pressed_give_answer = false, choosed_card = false;
     Chronometer myChronometer;
 
@@ -115,16 +117,20 @@ public class DisplayCards extends AppCompatActivity {
 
             @Override
             public void onChronometerTick(Chronometer chronometer) {
-                if(cards_id.get(myCurrentCard).getValue() / 10 < 1 ) {
+                if(cards_id.size() > 0 && cards_id.get(myCurrentCard).getValue() / 10 < 1 ) {
                     if (chronometer.getText().toString().equalsIgnoreCase("00:0" + cards_id.get(myCurrentCard).getValue())) {
                         chronometer.stop();
+                        on_going = false;
                         chronometer.setBackgroundColor(Color.RED);
+                        pressed_give_answer = true;
                         answer_display();
                     }
-                }else if(cards_id.get(myCurrentCard).getValue() / 10 >= 1 ) {
+                }else if(cards_id.size() > 0 && cards_id.get(myCurrentCard).getValue() / 10 >= 1 ) {
                     if (chronometer.getText().toString().equalsIgnoreCase("00:" + cards_id.get(myCurrentCard).getValue())) {
                         chronometer.stop();
+                        on_going = false;
                         chronometer.setBackgroundColor(Color.RED);
+                        pressed_give_answer = true;
                         answer_display();
                     }
                 }
@@ -162,6 +168,7 @@ public class DisplayCards extends AppCompatActivity {
                 } else {
                     myChronometer.setVisibility(View.VISIBLE);
                     myChronometer.start();
+                    on_going = true;
                 }
             }
         }else{
@@ -181,8 +188,20 @@ public class DisplayCards extends AppCompatActivity {
         savedInstanceState.putInt(STATE_LEVEL, myCurrentCard);
         savedInstanceState.putBoolean(STATE_ANSWER, pressed_give_answer);
         savedInstanceState.putBoolean(STATE_PASS, pressed_choice);
+        savedInstanceState.putLong("ChronoTime", myChronometer.getBase());
+        savedInstanceState.putBoolean("running", on_going);
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        if((savedInstanceState != null) && savedInstanceState.containsKey("ChronoTime") && !savedInstanceState.getBoolean("running")) {
+            myChronometer.stop();
+        }
+        if ((savedInstanceState != null) && savedInstanceState.containsKey("ChronoTime")){
+            myChronometer.setBase(savedInstanceState.getLong("ChronoTime"));
+        }
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
 
@@ -237,15 +256,17 @@ public class DisplayCards extends AppCompatActivity {
         Cursor tmp = resolver.query(uri,new String[]{"_id","last_time"},"card_id='"+card_id+"'",null,null);
 
         if(tmp != null && tmp.getCount() > 0) {
+            ContentValues values = new ContentValues();
+            values.put("last_time", System.currentTimeMillis()/1000);
             String [] arg = new String[]{card_id};
-            resolver.delete(uri,"card_id=?",arg);
+            resolver.update(uri,values,"card_id=?",arg);
             tmp.close();
+        }else {
+            ContentValues values = new ContentValues();
+            values.put("last_time", System.currentTimeMillis()/1000);
+            values.put("card_id", id);
+            resolver.insert(uri, values);
         }
-
-        ContentValues values = new ContentValues();
-        values.put("card_id", id);
-
-        resolver.insert(uri, values);
 
         removeFromOtherCollections(trivial);
         setInvisibleAnswerAndButtons();
@@ -269,15 +290,17 @@ public class DisplayCards extends AppCompatActivity {
         Cursor tmp = resolver.query(uri,new String[]{"_id","last_time"},"card_id='"+card_id+"'",null,null);
 
         if(tmp != null && tmp.getCount() > 0) {
+            ContentValues values = new ContentValues();
+            values.put("last_time", System.currentTimeMillis()/1000);
             String [] arg = new String[]{card_id};
-            resolver.delete(uri,"card_id=?",arg);
+            resolver.update(uri,values,"card_id=?",arg);
             tmp.close();
+        }else {
+            ContentValues values = new ContentValues();
+            values.put("last_time", System.currentTimeMillis()/1000);
+            values.put("card_id", id);
+            resolver.insert(uri, values);
         }
-
-        ContentValues values = new ContentValues();
-        values.put("card_id", id);
-
-        resolver.insert(uri, values);
 
         removeFromOtherCollections(easy);
         setInvisibleAnswerAndButtons();
@@ -301,16 +324,17 @@ public class DisplayCards extends AppCompatActivity {
         Cursor tmp = resolver.query(uri,new String[]{"_id","last_time"},"card_id='"+card_id+"'",null,null);
 
         if(tmp != null && tmp.getCount() > 0) {
+            ContentValues values = new ContentValues();
+            values.put("last_time", System.currentTimeMillis()/1000);
             String [] arg = new String[]{card_id};
-            resolver.delete(uri,"card_id=?",arg);
+            resolver.update(uri,values,"card_id=?",arg);
             tmp.close();
+        }else {
+            ContentValues values = new ContentValues();
+            values.put("last_time", System.currentTimeMillis()/1000);
+            values.put("card_id", id);
+            resolver.insert(uri, values);
         }
-
-        ContentValues values = new ContentValues();
-        values.put("card_id", id);
-
-        resolver.insert(uri, values);
-
         removeFromOtherCollections(medium);
         setInvisibleAnswerAndButtons();
         card.close();
@@ -333,14 +357,17 @@ public class DisplayCards extends AppCompatActivity {
         Cursor tmp = resolver.query(uri,new String[]{"_id","last_time"},"card_id='"+card_id+"'",null,null);
 
         if(tmp != null && tmp.getCount() > 0) {
+            ContentValues values = new ContentValues();
+            values.put("last_time", System.currentTimeMillis()/1000);
             String [] arg = new String[]{card_id};
-            resolver.delete(uri,"card_id=?",arg);
+            resolver.update(uri,values,"card_id=?",arg);
             tmp.close();
+        }else {
+            ContentValues values = new ContentValues();
+            values.put("last_time", System.currentTimeMillis()/1000);
+            values.put("card_id", id);
+            resolver.insert(uri, values);
         }
-        ContentValues values = new ContentValues();
-        values.put("card_id", id);
-
-        resolver.insert(uri, values);
 
         removeFromOtherCollections(hard);
         setInvisibleAnswerAndButtons();
@@ -502,7 +529,7 @@ public class DisplayCards extends AppCompatActivity {
                 .appendPath(hard)
                 .build();
 
-        String request = "strftime('%s','now') - strftime('%s',last_time) > " + re_ask_hard;
+        String request = (System.currentTimeMillis()/1000) + " - last_time > " + re_ask_hard;
 
         hard_cursor = resolver.query(uri, new String[]{"_id", "card_id", "last_time"}, request, null, null);
     }
@@ -515,7 +542,7 @@ public class DisplayCards extends AppCompatActivity {
                 .appendPath(medium)
                 .build();
 
-        String request = "strftime('%s','now') - strftime('%s',last_time) > " + re_ask_medium;
+        String request = (System.currentTimeMillis()/1000) + " - last_time > " + re_ask_medium;
 
         medium_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, request, null, null);
     }
@@ -528,7 +555,7 @@ public class DisplayCards extends AppCompatActivity {
                 .appendPath(easy)
                 .build();
 
-        String request = "strftime('%s','now') - strftime('%s',last_time) > " + re_ask_easy;
+        String request = (System.currentTimeMillis()/1000) + " - last_time > " + re_ask_easy;
 
         easy_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, request, null, null);
     }
@@ -542,7 +569,7 @@ public class DisplayCards extends AppCompatActivity {
                     .appendPath(trivial)
                     .build();
 
-            String request = "strftime('%s','now') - strftime('%s',last_time) > " + re_ask_trivial;
+            String request = (System.currentTimeMillis()/1000) + " - last_time > " + re_ask_trivial;
 
             trivial_cursor = resolver.query(uri, new String[]{"_id", "card_id"}, request, null, null);
         }
