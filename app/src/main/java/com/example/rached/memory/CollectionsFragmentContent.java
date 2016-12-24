@@ -66,23 +66,28 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
             throw new RuntimeException(LOG + " missing Arguments");
         }
 
-        mAuthority = getArguments().getString(AUTHORITY);
-        mTable = getArguments().getString(TABLE);
-        mColumn = getArguments().getString(COLUMN);
+        System.out.println("LALA");
+        mAuthority = getResources().getString(R.string.authority);
+        mTable = "collections_table";
+        mColumn = "name";
+            //mAuthority = getArguments().getString(AUTHORITY);
+            //mTable = getArguments().getString(TABLE);
+            //mColumn = getArguments().getString(COLUMN);
 
-        adapter = new SimpleCursorAdapter(
-                getActivity(),/*context*/
-                android.R.layout.simple_list_item_1,
-                null, /*Cursor - null initialement */
-                new String[]{mColumn},
-                new int[]{android.R.id.text1}, 0);
-            /* dans ListFragment utiliser setListAdapter() au lieu de setAdapter() */
-        setListAdapter(adapter);
+        System.out.println(mAuthority + "  " + " " + mTable + " " +mColumn);
+
+            adapter = new SimpleCursorAdapter(
+                    getActivity(),/*context*/
+                    android.R.layout.simple_list_item_1,
+                    null, /*Cursor - null initialement */
+                    new String[]{mColumn},
+                    new int[]{android.R.id.text1}, 0);
+            setListAdapter(adapter);
 
 
-        swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
-        /* the refresh listner.
-        this would be called when the layout is pulled down */
+        if (savedInstanceState == null)
+            swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
+
         if(swipeRefreshLayout != null) {
             swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
@@ -105,6 +110,7 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
                 builder.scheme("content").authority(mAuthority).appendPath("collections_table");
                 Uri uri = builder.build();
                 Cursor cursor = resolver.query(uri, null, null, null, null);
+                System.out.println(cursor.getCount());
                 adapter.swapCursor(cursor);
                 swipeRefreshLayout.setRefreshing(false);
             }
@@ -114,7 +120,8 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
     @Override
     public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
         getLoaderManager().initLoader(100, null, this);
-        swipeRefreshLayout.setRefreshing(false);
+        if(swipeRefreshLayout != null)
+            swipeRefreshLayout.setRefreshing(false);
         adapter.swapCursor(null);
     }
 

@@ -39,7 +39,7 @@
         android:inputType="textMultiLine"
         android:ems="10"
         android:id="@+id/answer"
-        android:hint="answer "
+        android:hint="answer"
         android:layout_below="@+id/question"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -65,16 +65,6 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/titreID"
-        android:text="New Card"
-        android:textSize="20sp"
-        android:layout_marginBottom="52dp"
-        android:layout_above="@+id/collections"
-        android:layout_centerHorizontal="true" />
-
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -85,11 +75,11 @@
         android:layout_marginBottom="20dp" />
 
     <TextView
-        android:text="Collection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:textSize="16sp"
+        android:id="@+id/titreID"
+        android:text="New Card"
+        android:textSize="20sp"
         android:layout_above="@+id/collections"
         android:layout_centerHorizontal="true" />
 

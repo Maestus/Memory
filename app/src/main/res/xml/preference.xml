@@ -3,41 +3,49 @@
 
     <EditTextPreference android:title="Notification of old collections"
         android:key="collections_max_sleep"
-        android:defaultValue="10"/>
+        android:defaultValue="10"
+        android:numeric="integer"/>
 
     <PreferenceCategory android:title="Hours before re-ask">
 
         <EditTextPreference android:title="Hard Difficulty"
             android:key="hardsleeptime"
-            android:defaultValue="24"/>
+            android:defaultValue="24"
+            android:numeric="integer"/>
         <EditTextPreference android:title="Medium Difficulty"
             android:key="mediumsleeptime"
-            android:defaultValue="48"/>
+            android:defaultValue="48"
+            android:numeric="integer"/>
         <EditTextPreference android:title="Easy Difficulty"
             android:key="easysleeptime"
-            android:defaultValue="72"/>
+            android:defaultValue="72"
+            android:numeric="integer"/>
         <EditTextPreference android:title="Trivial Difficulty"
             android:key="trivialsleeptime"
             android:summary="Never re-ask by default"/>
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Maximum minutes for a question">
+    <PreferenceCategory android:title="Maximum seconds for a question">
 
         <EditTextPreference android:title="Hard Difficulty"
-            android:key="hard_minutes"
-            android:defaultValue="5"/>
+            android:key="hard_seconds"
+            android:defaultValue="5"
+            android:numeric="integer"/>
         <EditTextPreference android:title="Medium Difficulty"
-            android:key="medium_minutes"
-            android:defaultValue="3"/>
+            android:key="medium_seconds"
+            android:defaultValue="3"
+            android:numeric="integer"/>
         <EditTextPreference android:title="Easy Difficulty"
-            android:key="easy_minutes"
-            android:defaultValue="2"/>
+            android:key="easy_seconds"
+            android:defaultValue="2"
+            android:numeric="integer"/>
         <EditTextPreference android:title="Trivial Difficulty"
-            android:key="trivial_minutes"
+            android:key="trivial_seconds"
             android:enabled="false"
             android:summary="Disable if never re-ask"
-            android:defaultValue="1"/>
+            android:defaultValue="1"
+            android:numeric="integer"/>
 
     </PreferenceCategory>
 

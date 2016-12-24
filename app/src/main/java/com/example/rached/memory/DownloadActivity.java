@@ -1,48 +1,49 @@
 package com.example.rached.memory;
 
-import android.Manifest;
 import android.app.DownloadManager;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import android.support.v4.content.ContextCompat;
-
-import java.io.File;
 
 public class DownloadActivity extends Fragment {
     Uri uri = Uri.parse("https://drive.google.com/uc?export=download&id=0B3Q4cpPks70WbEpOLUxjMnFPTVU");
     private DownloadManager mgr=null;
     private long lastDownload=-1L;
-    boolean ended = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View result=inflater.inflate(R.layout.fragment_download, parent, false);
         mgr = (DownloadManager)getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
 
+        System.out.println("ONE MORE TIME");
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         startRequest();
         queryStatus();
-
-        getActivity().registerReceiver(onComplete,
-                new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-
+        getActivity().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         return(result);
     }
 
+    BroadcastReceiver onComplete=new BroadcastReceiver() {
+        public void onReceive(Context ctxt, Intent intent) {
+            Toast.makeText(ctxt, "Finished", Toast.LENGTH_LONG).show();
+            getFragmentManager().beginTransaction().add(R.id.content_main, new ParseXML()).commit();
 
+        }
+    };
 
     @Override
     public void onResume() {
@@ -53,15 +54,17 @@ public class DownloadActivity extends Fragment {
         f.addAction(DownloadManager.ACTION_NOTIFICATION_CLICKED);
 
         getActivity().registerReceiver(onEvent, f);
+        getActivity().registerReceiver(onComplete, f);
+
     }
 
     @Override
     public void onPause() {
         getActivity().unregisterReceiver(onEvent);
+        getActivity().unregisterReceiver(onComplete);
 
         super.onPause();
     }
-
 
     public void startRequest(){
 
@@ -146,7 +149,6 @@ public class DownloadActivity extends Fragment {
 
             case DownloadManager.STATUS_SUCCESSFUL:
                 msg = getActivity().getString(R.string.download_complete);
-                ended = true;
                 break;
 
             default:
@@ -156,12 +158,5 @@ public class DownloadActivity extends Fragment {
 
         return(msg);
     }
-
-    BroadcastReceiver onComplete=new BroadcastReceiver() {
-        public void onReceive(Context ctxt, Intent intent) {
-            Toast.makeText(ctxt, "Finished", Toast.LENGTH_LONG).show();
-            getFragmentManager().beginTransaction().add(R.id.content_main, new ParseXML()).commit();
-        }
-    };
 
 }

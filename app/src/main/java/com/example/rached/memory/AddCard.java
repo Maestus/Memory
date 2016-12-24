@@ -62,12 +62,12 @@ public class AddCard extends AppCompatActivity
 
         ContentValues values = new ContentValues();
         values.put("name",collection);
-        values.put("name2",collection);
+        values.put("time",System.currentTimeMillis()/1000);
 
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("content").authority(authority).appendPath("collections_table");
         Uri uri = builder.build();
-        uri = resolver.insert(uri,values);
+        resolver.insert(uri,values);
         editcollec.clear();
     }
 

@@ -53,7 +53,8 @@ public class DisplayCards extends AppCompatActivity {
     static final String STATE_ANSWER = "pressed_give_answer";
     static final String STATE_PASS = "pressed_choice";
     int myCurrentCard;
-    boolean on_going = false;
+    boolean on_going;
+    CharSequence time_to_display;
     boolean pressed_choice = false, pressed_give_answer = false, choosed_card = false;
     Chronometer myChronometer;
 
@@ -62,6 +63,27 @@ public class DisplayCards extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cards_display);
 
+        myChronometer = (Chronometer) findViewById(R.id.chronometer1);
+
+        if(savedInstanceState == null) {
+            time_to_display="";
+            on_going = true;
+        }
+
+        if((savedInstanceState != null)) {
+            myChronometer.setBase(savedInstanceState.getLong("ChronoTime"));
+            on_going = savedInstanceState.getBoolean("running");
+            if(!on_going){
+                myChronometer.stop();
+                myChronometer.setText(savedInstanceState.getString("time"));
+                time_to_display = savedInstanceState.getString("time");
+                myChronometer.setBackgroundColor(Color.RED);
+            }else {
+                myChronometer.start();
+                myChronometer.setBackgroundColor(Color.WHITE);
+            }
+        }
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         re_ask_easy = prefs.getString("easysleeptime","72");
@@ -69,13 +91,10 @@ public class DisplayCards extends AppCompatActivity {
         re_ask_hard = prefs.getString("hardsleeptime","24");
         re_ask_trivial = prefs.getString("trivialsleeptime","Never");
 
-        easy_timer = prefs.getString("easysleeptime","2");
-        medium_timer = prefs.getString("mediumsleeptime","3");
-        hard_timer = prefs.getString("hardsleeptime","5");
-        trivial_timer = prefs.getString("trivialsleeptime","1");
-
-
-        myChronometer = (Chronometer) findViewById(R.id.chronometer1);
+        easy_timer = prefs.getString("easy_seconds","2");
+        medium_timer = prefs.getString("medium_seconds","3");
+        hard_timer = prefs.getString("hard_seconds","5");
+        trivial_timer = prefs.getString("trivial_seconds","1");
 
 
         hard = "hard_cards_table";
@@ -120,6 +139,7 @@ public class DisplayCards extends AppCompatActivity {
                 if(cards_id.size() > 0 && cards_id.get(myCurrentCard).getValue() / 10 < 1 ) {
                     if (chronometer.getText().toString().equalsIgnoreCase("00:0" + cards_id.get(myCurrentCard).getValue())) {
                         chronometer.stop();
+                        time_to_display = chronometer.getText();
                         on_going = false;
                         chronometer.setBackgroundColor(Color.RED);
                         pressed_give_answer = true;
@@ -128,6 +148,7 @@ public class DisplayCards extends AppCompatActivity {
                 }else if(cards_id.size() > 0 && cards_id.get(myCurrentCard).getValue() / 10 >= 1 ) {
                     if (chronometer.getText().toString().equalsIgnoreCase("00:" + cards_id.get(myCurrentCard).getValue())) {
                         chronometer.stop();
+                        time_to_display = chronometer.getText();
                         on_going = false;
                         chronometer.setBackgroundColor(Color.RED);
                         pressed_give_answer = true;
@@ -136,7 +157,6 @@ public class DisplayCards extends AppCompatActivity {
                 }
             }
         });
-
         play();
     }
 
@@ -157,6 +177,7 @@ public class DisplayCards extends AppCompatActivity {
                 card.moveToFirst();
                 question = card.getString(card.getColumnIndex("question"));
                 answer = card.getString(card.getColumnIndex("answer"));
+                answer = card.getString(card.getColumnIndex("answer"));
                 TextView t1 = (TextView) findViewById(R.id.question);
                 TextView t2 = (TextView) findViewById(R.id.answer);
                 t1.setText("");
@@ -165,10 +186,10 @@ public class DisplayCards extends AppCompatActivity {
                 t2.append(answer);
                 if (cards_id.get(myCurrentCard).getValue() == 0) {
                     myChronometer.setVisibility(View.INVISIBLE);
-                } else {
+                } else if(on_going){
                     myChronometer.setVisibility(View.VISIBLE);
                     myChronometer.start();
-                    on_going = true;
+                    myChronometer.setBackgroundColor(Color.WHITE);
                 }
             }
         }else{
@@ -190,18 +211,9 @@ public class DisplayCards extends AppCompatActivity {
         savedInstanceState.putBoolean(STATE_PASS, pressed_choice);
         savedInstanceState.putLong("ChronoTime", myChronometer.getBase());
         savedInstanceState.putBoolean("running", on_going);
+        savedInstanceState.putCharSequence("time", time_to_display);
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
-    }
-
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        if((savedInstanceState != null) && savedInstanceState.containsKey("ChronoTime") && !savedInstanceState.getBoolean("running")) {
-            myChronometer.stop();
-        }
-        if ((savedInstanceState != null) && savedInstanceState.containsKey("ChronoTime")){
-            myChronometer.setBase(savedInstanceState.getLong("ChronoTime"));
-        }
-        super.onRestoreInstanceState(savedInstanceState);
     }
 
 
@@ -272,6 +284,7 @@ public class DisplayCards extends AppCompatActivity {
         setInvisibleAnswerAndButtons();
         card.close();
         cards_id.remove(myCurrentCard);
+        on_going = true;
         choosed_card = false;
         pressed_give_answer = false;
         play();
@@ -306,6 +319,7 @@ public class DisplayCards extends AppCompatActivity {
         setInvisibleAnswerAndButtons();
         card.close();
         cards_id.remove(myCurrentCard);
+        on_going = true;
         choosed_card = false;
         pressed_give_answer = false;
         play();
@@ -339,6 +353,7 @@ public class DisplayCards extends AppCompatActivity {
         setInvisibleAnswerAndButtons();
         card.close();
         cards_id.remove(myCurrentCard);
+        on_going = true;
         choosed_card = false;
         pressed_give_answer = false;
         play();
@@ -373,6 +388,7 @@ public class DisplayCards extends AppCompatActivity {
         setInvisibleAnswerAndButtons();
         card.close();
         cards_id.remove(myCurrentCard);
+        on_going = true;
         choosed_card = false;
         pressed_give_answer = false;
         play();
