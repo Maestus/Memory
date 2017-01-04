@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity
                 Notification notification = new NotificationCompat.Builder(this)
                         .setContentTitle("Memory")
                         .setContentText("La collection " + collections.getString(collections.getColumnIndex("name")) + " commence à prendre la poussière")
-                        .setSmallIcon(R.drawable.small)
+                        .setSmallIcon(R.drawable.ic_stat_name)
                         .setAutoCancel(true)
                         .build();
                 ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity
                     notification = new NotificationCompat.Builder(this)
                             .setContentTitle("Memory")
                             .setContentText("La collection " + collections.getString(collections.getColumnIndex("name")) + " commence à prendre la poussière")
-                            .setSmallIcon(R.drawable.small)
+                            .setSmallIcon(R.drawable.ic_stat_name)
                             .setAutoCancel(true)
                             .build();
                     ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))

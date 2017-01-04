@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.view.ViewCompat;
@@ -35,7 +36,6 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
     private String mAuthority, mTable, mColumn;
     private static final String LOG = "FragmentContent";
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Handler handler = new Handler();
 
     public CollectionsFragmentContent() {
         // Required empty public constructor
@@ -60,57 +60,47 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         if (getArguments() == null) {
             throw new RuntimeException(LOG + " missing Arguments");
         }
 
-        System.out.println("LALA");
-        mAuthority = getResources().getString(R.string.authority);
-        mTable = "collections_table";
-        mColumn = "name";
-            //mAuthority = getArguments().getString(AUTHORITY);
-            //mTable = getArguments().getString(TABLE);
-            //mColumn = getArguments().getString(COLUMN);
+        mAuthority = getArguments().getString(AUTHORITY);
+        mTable = getArguments().getString(TABLE);
+        mColumn = getArguments().getString(COLUMN);
 
-        System.out.println(mAuthority + "  " + " " + mTable + " " +mColumn);
-
-            adapter = new SimpleCursorAdapter(
+        adapter = new SimpleCursorAdapter(
                     getActivity(),/*context*/
                     android.R.layout.simple_list_item_1,
                     null, /*Cursor - null initialement */
                     new String[]{mColumn},
                     new int[]{android.R.id.text1}, 0);
-            setListAdapter(adapter);
 
+        setListAdapter(adapter);
 
-        if (savedInstanceState == null)
-            swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
-
-        if(swipeRefreshLayout != null) {
-            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
                 @Override
                 public void onRefresh() {
                     refreshContent();
                 }
-            });
-        }
+        });
         getLoaderManager().initLoader(100, null, this);
     }
+
 
     private void refreshContent(){
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                System.out.println(mAuthority);
                 ContentResolver resolver = getActivity().getContentResolver();
                 Uri.Builder builder = new Uri.Builder();
-                builder.scheme("content").authority(mAuthority).appendPath("collections_table");
+                builder.scheme("content").authority(mAuthority).appendPath(mTable);
                 Uri uri = builder.build();
                 Cursor cursor = resolver.query(uri, null, null, null, null);
-                System.out.println(cursor.getCount());
+                if(cursor != null) System.out.println(cursor.getCount());
                 adapter.swapCursor(cursor);
                 swipeRefreshLayout.setRefreshing(false);
             }
@@ -147,25 +137,6 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
                 null, null, null);
     }
 
-    private final Runnable refreshing = new Runnable(){
-        public void run(){
-            try {
-            /* TODO : isRefreshing should be attached to your data request status */
-                if(isRefreshing()){
-                    // re run the verification after 1 second
-                    handler.postDelayed(this, 1000);
-                }else{
-                    // stop the animation after the data is fully loaded
-                    swipeRefreshLayout.setRefreshing(false);
-                    // TODO : update your list with the new data
-                }
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
 
     /**
      * Returns whether the {@link android.support.v4.widget.SwipeRefreshLayout} is currently
@@ -173,10 +144,6 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
      *
      * @see android.support.v4.widget.SwipeRefreshLayout#isRefreshing()
      */
-    public boolean isRefreshing() {
-        return swipeRefreshLayout.isRefreshing();
-    }
-
 
     @Override
     public void onAttach(final Context context) {
@@ -186,6 +153,7 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
             /* enregistrer FragmentListener sans doute l'activite mere */
             Log.d(LOG,"mListener memorise");
             mListener = (OnFragmentInteractionListener) context;
+            refreshContent();
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
