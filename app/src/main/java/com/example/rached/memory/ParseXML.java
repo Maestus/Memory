@@ -46,7 +46,7 @@ public class ParseXML extends Fragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View result=inflater.inflate(R.layout.fragment_download, parent, false);
+        View result=inflater.inflate(R.layout.content_main, parent, false);
 
         try {
             xmlFactoryObject = XmlPullParserFactory.newInstance();
@@ -128,7 +128,6 @@ public class ParseXML extends Fragment{
                 values.put("answer", answer);
                 values.put("collection_id", id);
 
-                //builder = builder.clearQuery();
                 builder = new Uri.Builder();
                 builder.scheme("content").authority(authority).appendPath("cards_table");
                 uri = builder.build();

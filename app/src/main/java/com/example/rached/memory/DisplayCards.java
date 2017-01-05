@@ -108,17 +108,15 @@ public class DisplayCards extends AppCompatActivity {
 
         resolver = getContentResolver();
 
-        createCursorJustAdded();
 
-        createCursorHard();
-        createCursorMedium();
-        createCursorEasy();
-        createCursorTrivial();
-
-
-        if(savedInstanceState == null)
+        if(savedInstanceState == null){
+            createCursorJustAdded();
+            createCursorHard();
+            createCursorMedium();
+            createCursorEasy();
+            createCursorTrivial();
             ListedAllCardsGet();
-        else {
+        } else {
             System.out.println("In there");
             cards_id = savedInstanceState.getParcelableArrayList("savedList");
         }
@@ -141,7 +139,8 @@ public class DisplayCards extends AppCompatActivity {
 
             @Override
             public void onChronometerTick(Chronometer chronometer) {
-                if(cards_id.size() > 0 && cards_id.get(myCurrentCard).getValue() / 10 < 1 ) {
+                if(cards_id.size() > 0 && cards_id.get(myCurrentCard).getValue() / 10 < 1 && cards_id.get(myCurrentCard).getValue() > 0 ) {
+                    System.out.println("la");
                     if (chronometer.getText().toString().equalsIgnoreCase("00:0" + cards_id.get(myCurrentCard).getValue())) {
                         chronometer.stop();
                         time_to_display = chronometer.getText();

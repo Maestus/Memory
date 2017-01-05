@@ -14,11 +14,6 @@
     tools:context="com.example.rached.memory.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <include
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/fragment_download"
-        android:id="@+id/fragment_download" />
 
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
