@@ -9,10 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
-/**
- * Created by rached on 18/12/16.
- */
-
 public class MemoryContentProvider extends ContentProvider {
     private static String authority = "com.example.rached.memorycontentprovider";
     private MainDB helper;
@@ -58,7 +54,6 @@ public class MemoryContentProvider extends ContentProvider {
     public int delete(Uri uri, String where, String[] whereArgs) {
         SQLiteDatabase db = helper.getWritableDatabase();
         int code = matcher.match(uri);
-        System.out.println(uri.getPath());
         int i;
         switch (code) {
             case CARDS:

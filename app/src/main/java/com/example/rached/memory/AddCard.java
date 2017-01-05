@@ -18,9 +18,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-/**
- * Created by rached on 20/12/16.
- */
 
 public class AddCard extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor>{

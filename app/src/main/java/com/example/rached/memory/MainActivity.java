@@ -2,11 +2,8 @@ package com.example.rached.memory;
 
 import android.Manifest;
 import android.app.DownloadManager;
-import android.app.Fragment;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -16,7 +13,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,7 +22,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -37,27 +32,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,CollectionsFragmentContent.OnFragmentInteractionListener{
-    Uri uri = Uri.parse("https://drive.google.com/uc?export=download&id=0B3Q4cpPks70WbEpOLUxjMnFPTVU");
+    Uri uri = Uri.parse("https://drive.google.com/uc?export=download&id=0B3Q4cpPks70WQWxYOGZscjBBRkE");
     private DownloadManager mgr=null;
     private long lastDownload=-1L;
     private String mAuthority;
-    private String mTagAuteurs = "collections";
-    private CollectionsFragmentContent mAuteursFragment;
-    private static final String LOG = "CollectionsBD";
-    private static final String SAVE_ID = "saveId";
+    private String mTagTable = "collections";
     final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL = 101;
     String collection_max_open;
     boolean notification;
-    FragmentTransaction transaction;
     boolean transfer_over;
 
     @Override
@@ -113,7 +100,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.list_collection, CollectionsFragmentContent.newInstance(mAuthority, "collections_table", "name"), mTagAuteurs).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.list_collection, CollectionsFragmentContent.newInstance(mAuthority, "collections_table", "name"), mTagTable).commit();
         }
         notifyContentToSee();
     }

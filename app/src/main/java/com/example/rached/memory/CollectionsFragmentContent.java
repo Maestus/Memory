@@ -87,7 +87,7 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
                     builder.scheme("content").authority(mAuthority).appendPath(mTable);
                     Uri uri = builder.build();
                     Cursor cursor = resolver.query(uri, null, null, null, null);
-                    if (cursor != null) System.out.println(cursor.getCount());
+                    if (cursor != null) System.out.println("Elements dans la table collections = "+cursor.getCount());
                     adapter.swapCursor(cursor);
                     swipeRefreshLayout.setRefreshing(false);
                 }
@@ -107,7 +107,7 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
         adapter.swapCursor(data);
         if (data != null) {
-            Log.d(LOG, "load finished taille=" + data.getCount() + "");
+            Log.d(LOG, "load finished size = " + data.getCount() + "");
         } else {
             Log.d(LOG, "load finished data null");
         }
@@ -136,10 +136,7 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
-        Log.d(LOG,"onAttach");
         if (context instanceof OnFragmentInteractionListener) {
-            /* enregistrer FragmentListener sans doute l'activite mere */
-            Log.d(LOG,"mListener memorise");
             mListener = (OnFragmentInteractionListener) context;
             refreshContent();
         } else {
@@ -150,8 +147,6 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
 
     @Override
     public void onDetach() {
-        Log.d(LOG,"on detach");
-        //mListener = null;
         super.onDetach();
         mListener = null;
     }
@@ -160,11 +155,7 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        Log.d(LOG, "clicked dans la liste : ");
-        if(mListener == null){
-            Log.d(LOG,"onListItemClick mListener=null");
-        }
-
+        if(mListener == null){return;}
         mListener.onIdSelection(id);
     }
 

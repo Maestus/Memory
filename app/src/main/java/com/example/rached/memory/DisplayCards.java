@@ -2,7 +2,6 @@ package com.example.rached.memory;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -12,32 +11,12 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
-import java.util.TimeZone;
-
-import static java.text.DateFormat.getDateTimeInstance;
 
 public class DisplayCards extends AppCompatActivity {
     private static String authority = "com.example.rached.memorycontentprovider";
@@ -117,7 +96,6 @@ public class DisplayCards extends AppCompatActivity {
             createCursorTrivial();
             ListedAllCardsGet();
         } else {
-            System.out.println("In there");
             cards_id = savedInstanceState.getParcelableArrayList("savedList");
         }
         if(savedInstanceState == null){
@@ -140,7 +118,6 @@ public class DisplayCards extends AppCompatActivity {
             @Override
             public void onChronometerTick(Chronometer chronometer) {
                 if(cards_id.size() > 0 && cards_id.get(myCurrentCard).getValue() / 10 < 1 && cards_id.get(myCurrentCard).getValue() > 0 ) {
-                    System.out.println("la");
                     if (chronometer.getText().toString().equalsIgnoreCase("00:0" + cards_id.get(myCurrentCard).getValue())) {
                         chronometer.stop();
                         time_to_display = chronometer.getText();
