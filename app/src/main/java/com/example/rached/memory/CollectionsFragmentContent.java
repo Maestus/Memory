@@ -84,6 +84,7 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
 
                 @Override
                 public void onRefresh() {
+                    System.out.println("Merde");
                     refreshContent();
                 }
         });
@@ -95,14 +96,16 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                ContentResolver resolver = getActivity().getContentResolver();
-                Uri.Builder builder = new Uri.Builder();
-                builder.scheme("content").authority(mAuthority).appendPath(mTable);
-                Uri uri = builder.build();
-                Cursor cursor = resolver.query(uri, null, null, null, null);
-                if(cursor != null) System.out.println(cursor.getCount());
-                adapter.swapCursor(cursor);
-                swipeRefreshLayout.setRefreshing(false);
+                if(getActivity() != null) {
+                    ContentResolver resolver = getActivity().getContentResolver();
+                    Uri.Builder builder = new Uri.Builder();
+                    builder.scheme("content").authority(mAuthority).appendPath(mTable);
+                    Uri uri = builder.build();
+                    Cursor cursor = resolver.query(uri, null, null, null, null);
+                    if (cursor != null) System.out.println(cursor.getCount());
+                    adapter.swapCursor(cursor);
+                    swipeRefreshLayout.setRefreshing(false);
+                }
             }
         },500);
     }

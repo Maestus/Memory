@@ -21,8 +21,10 @@
             android:defaultValue="72"
             android:numeric="integer"/>
         <EditTextPreference android:title="Trivial Difficulty"
+            android:id="@+id/trivial_one"
             android:key="trivialsleeptime"
-            android:summary="Never re-ask by default"/>
+            android:summary="Never re-ask by default"
+            android:numeric="integer"/>
 
     </PreferenceCategory>
 

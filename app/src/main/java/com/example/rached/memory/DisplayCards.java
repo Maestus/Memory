@@ -577,7 +577,7 @@ public class DisplayCards extends AppCompatActivity {
     }
 
     public void createCursorTrivial() {
-        if (!re_ask_trivial.equals("Never")) {
+        if (!re_ask_trivial.equals("Never") && !re_ask_trivial.equals("") ) {
             Uri uri;
             Uri.Builder builder = new Uri.Builder();
             uri = builder.scheme("content")
