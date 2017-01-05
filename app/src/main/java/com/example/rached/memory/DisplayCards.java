@@ -47,7 +47,7 @@ public class DisplayCards extends AppCompatActivity {
     private String re_ask_hard, re_ask_medium, re_ask_easy, re_ask_trivial;
     private String hard_timer, medium_timer, easy_timer, trivial_timer;
     private  Cursor card,hard_cursor,medium_cursor,easy_cursor, trivial_cursor, just_added_cursor;
-    List<Map.Entry<String,Integer>> cards_id = new ArrayList<>();
+    ArrayList<MyCard> cards_id = new ArrayList<>();
     String card_id,question,answer;
     static final String STATE_LEVEL = "Card_id";
     static final String STATE_ANSWER = "pressed_give_answer";
@@ -115,8 +115,13 @@ public class DisplayCards extends AppCompatActivity {
         createCursorEasy();
         createCursorTrivial();
 
-        ListedAllCardsGet();
 
+        if(savedInstanceState == null)
+            ListedAllCardsGet();
+        else {
+            System.out.println("In there");
+            cards_id = savedInstanceState.getParcelableArrayList("savedList");
+        }
         if(savedInstanceState == null){
             if(cards_id.size() > 0) {
                 Random r = new Random();
@@ -205,14 +210,13 @@ public class DisplayCards extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the user's current game state
+        savedInstanceState.putParcelableArrayList("savedList", cards_id);
         savedInstanceState.putInt(STATE_LEVEL, myCurrentCard);
         savedInstanceState.putBoolean(STATE_ANSWER, pressed_give_answer);
         savedInstanceState.putBoolean(STATE_PASS, pressed_choice);
         savedInstanceState.putLong("ChronoTime", myChronometer.getBase());
         savedInstanceState.putBoolean("running", on_going);
         savedInstanceState.putCharSequence("time", time_to_display);
-        // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -435,14 +439,14 @@ public class DisplayCards extends AppCompatActivity {
                 just = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + just_added_cursor.getString(just_added_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (just != null && just.getCount() > 0) {
                     just.moveToFirst();
-                    cards_id.add(new AbstractMap.SimpleEntry<>(just.getString(just.getColumnIndex("_id")),0));
+                    cards_id.add(new MyCard(just.getString(just.getColumnIndex("_id")),0));
                     just.close();
                 }
                 while (just_added_cursor.moveToNext()) {
                     just = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + just_added_cursor.getString(just_added_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                     if (just != null && just.getCount() > 0) {
                         just.moveToFirst();
-                        cards_id.add(new AbstractMap.SimpleEntry<>(just.getString(just.getColumnIndex("_id")),0));
+                        cards_id.add(new MyCard(just.getString(just.getColumnIndex("_id")),0));
                         just.close();
                     }
                 }
@@ -453,14 +457,14 @@ public class DisplayCards extends AppCompatActivity {
                 hard = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + hard_cursor.getString(hard_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (hard != null && hard.getCount() > 0) {
                     hard.moveToFirst();
-                    cards_id.add(new AbstractMap.SimpleEntry<>(hard.getString(hard.getColumnIndex("_id")),Integer.parseInt(hard_timer)));
+                    cards_id.add(new MyCard(hard.getString(hard.getColumnIndex("_id")),Integer.parseInt(hard_timer)));
                     hard.close();
                 }
                 while (hard_cursor.moveToNext()) {
                     hard = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + hard_cursor.getString(hard_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                     if (hard != null && hard.getCount() > 0) {
                         hard.moveToFirst();
-                        cards_id.add(new AbstractMap.SimpleEntry<>(hard.getString(hard.getColumnIndex("_id")),Integer.parseInt(hard_timer)));
+                        cards_id.add(new MyCard(hard.getString(hard.getColumnIndex("_id")),Integer.parseInt(hard_timer)));
                         hard.close();
                     }
                 }
@@ -471,14 +475,14 @@ public class DisplayCards extends AppCompatActivity {
                 medium = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + medium_cursor.getString(medium_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (medium != null && medium.getCount() > 0) {
                     medium.moveToFirst();
-                    cards_id.add(new AbstractMap.SimpleEntry<>(medium.getString(medium.getColumnIndex("_id")),Integer.parseInt(medium_timer)));
+                    cards_id.add(new MyCard(medium.getString(medium.getColumnIndex("_id")),Integer.parseInt(medium_timer)));
                     medium.close();
                 }
                 while (medium_cursor.moveToNext()) {
                     medium = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + medium_cursor.getString(medium_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                     if (medium != null && medium.getCount() > 0) {
                         medium.moveToFirst();
-                        cards_id.add(new AbstractMap.SimpleEntry<>(medium.getString(medium.getColumnIndex("_id")),Integer.parseInt(medium_timer)));
+                        cards_id.add(new MyCard(medium.getString(medium.getColumnIndex("_id")),Integer.parseInt(medium_timer)));
                         medium.close();
                     }
                 }
@@ -489,14 +493,14 @@ public class DisplayCards extends AppCompatActivity {
                 easy = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + easy_cursor.getString(easy_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (easy != null && easy.getCount() > 0) {
                     easy.moveToFirst();
-                    cards_id.add(new AbstractMap.SimpleEntry<>(easy.getString(easy.getColumnIndex("_id")),Integer.parseInt(easy_timer)));
+                    cards_id.add(new MyCard(easy.getString(easy.getColumnIndex("_id")),Integer.parseInt(easy_timer)));
                     easy.close();
                 }
                 while (easy_cursor.moveToNext()) {
                     easy = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + easy_cursor.getString(easy_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                     if (easy != null && easy.getCount() > 0) {
                         easy.moveToFirst();
-                        cards_id.add(new AbstractMap.SimpleEntry<>(easy.getString(easy.getColumnIndex("_id")),Integer.parseInt(easy_timer)));
+                        cards_id.add(new MyCard(easy.getString(easy.getColumnIndex("_id")),Integer.parseInt(easy_timer)));
                         easy.close();
                     }
                 }
@@ -507,14 +511,14 @@ public class DisplayCards extends AppCompatActivity {
                 trivial = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + trivial_cursor.getString(trivial_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                 if (trivial != null && trivial.getCount() > 0) {
                     trivial.moveToFirst();
-                    cards_id.add(new AbstractMap.SimpleEntry<>(trivial.getString(trivial.getColumnIndex("_id")),Integer.parseInt(trivial_timer)));
+                    cards_id.add(new MyCard(trivial.getString(trivial.getColumnIndex("_id")),Integer.parseInt(trivial_timer)));
                     trivial.close();
                 }
                 while (trivial_cursor.moveToNext()) {
                     trivial = resolver.query(uri, new String[]{"_id", column_question, column_answer}, "collection_id='" + intent.getLongExtra("key", 1L) + "' and '" + trivial_cursor.getString(trivial_cursor.getColumnIndex("card_id")) + "' = _id", null, null);
                     if (trivial != null && trivial.getCount() > 0) {
                         trivial.moveToFirst();
-                        cards_id.add(new AbstractMap.SimpleEntry<>(trivial.getString(trivial.getColumnIndex("_id")),Integer.parseInt(trivial_timer)));
+                        cards_id.add(new MyCard(trivial.getString(trivial.getColumnIndex("_id")),Integer.parseInt(trivial_timer)));
                         trivial.close();
                     }
                 }

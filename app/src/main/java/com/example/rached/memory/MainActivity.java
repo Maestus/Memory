@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity
     private BroadcastReceiver onEvent=new BroadcastReceiver() {
         public void onReceive(Context ctxt, Intent i) {
             if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(i.getAction())) {
-                Toast.makeText(ctxt, "lqd", Toast.LENGTH_LONG).show();
+                Toast.makeText(ctxt, "receive", Toast.LENGTH_LONG).show();
             }
         }
     };

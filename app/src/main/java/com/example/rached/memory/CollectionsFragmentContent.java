@@ -1,31 +1,18 @@
 package com.example.rached.memory;
 
-import android.content.ClipData;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-
-import java.util.List;
-
-/**
- * Created by rached on 18/12/16.
- */
 
 public class CollectionsFragmentContent extends ListFragment implements  LoaderManager.LoaderCallbacks<Cursor> {
     private static final String AUTHORITY = "authority";
@@ -47,7 +34,6 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
      *
      * @return A new instance of fragment AfficherFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static CollectionsFragmentContent newInstance(String authority, String table, String column) {
         CollectionsFragmentContent fragment = new CollectionsFragmentContent();
         Bundle args = new Bundle();
@@ -84,7 +70,6 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
 
                 @Override
                 public void onRefresh() {
-                    System.out.println("Merde");
                     refreshContent();
                 }
         });
@@ -195,7 +180,6 @@ public class CollectionsFragmentContent extends ListFragment implements  LoaderM
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onIdSelection(long id);
     }
 
